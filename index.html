@@ -8,165 +8,161 @@
 <meta property="og:title" content="Based Client" />
 <meta property="og:description" content="A clean, open, fully un-obfuscated Minecraft Fabric utility client for 1.21.11." />
 <meta property="og:image" content="assets/BasedIcon.png" />
-<meta name="theme-color" content="#070707" />
+<meta name="theme-color" content="#060606" />
 <link rel="icon" type="image/png" href="assets/BasedIcon.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
+  /* ===== the client's own fonts — same as the in-game menu ===== */
+  @font-face{font-family:"Rajdhani";src:url("assets/fonts/rajdhani-semibold.ttf") format("truetype");font-weight:600;font-display:swap}
+  @font-face{font-family:"Rajdhani";src:url("assets/fonts/rajdhani-bold.ttf") format("truetype");font-weight:700;font-display:swap}
+  @font-face{font-family:"Geist";src:url("assets/fonts/geist-medium.ttf") format("truetype");font-weight:500;font-display:swap}
+  @font-face{font-family:"Geist";src:url("assets/fonts/geist-semibold.ttf") format("truetype");font-weight:600;font-display:swap}
+  @font-face{font-family:"Silkscreen";src:url("assets/fonts/silkscreen-regular.ttf") format("truetype");font-weight:400;font-display:swap}
+
   :root{
-    --bg:#070706;
-    --ink:#f3f1ea;
-    --mut:#8d8a81;
-    --dim:#56544d;
-    --line:rgba(243,241,234,.11);
-    --line-s:rgba(243,241,234,.06);
+    --bg:#070707;
+    --panel:#0e0e0e;
+    --ink:#f4f4f3;
+    --mut:#9b9b97;
+    --dim:#5e5e5a;
+    --line:rgba(244,244,243,.12);
+    --line-s:rgba(244,244,243,.06);
     --gut:22px;
-    --max:1120px;
-    --serif:"Fraunces",Georgia,"Times New Roman",serif;
-    --sans:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;
-    --mono:"JetBrains Mono",ui-monospace,monospace;
+    --max:1100px;
+    --disp:"Rajdhani",system-ui,sans-serif;     /* titles — menu font */
+    --ui:"Geist",system-ui,-apple-system,sans-serif; /* UI + body */
+    --pix:"Silkscreen","Geist",monospace;        /* pixel labels */
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-  body{
-    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
-    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:400;
-  }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-weight:500;
+    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   ::selection{background:var(--ink);color:var(--bg)}
   .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
 
-  /* ---- living texture: film grain + vignette ---- */
-  .grain{
-    position:fixed;inset:-150%;z-index:0;pointer-events:none;opacity:.045;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    animation:grain 7s steps(6) infinite;
-  }
-  @keyframes grain{
-    0%{transform:translate(0,0)}20%{transform:translate(-6%,4%)}40%{transform:translate(4%,-5%)}
-    60%{transform:translate(-5%,6%)}80%{transform:translate(6%,-4%)}100%{transform:translate(0,0)}
-  }
+  /* ===== living texture ===== */
+  .grain{position:fixed;inset:-150%;z-index:0;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    animation:grain 7s steps(6) infinite}
+  @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-6%,4%)}40%{transform:translate(4%,-5%)}60%{transform:translate(-5%,6%)}80%{transform:translate(6%,-4%)}100%{transform:translate(0,0)}}
   .vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(130% 90% at 50% -10%,transparent 55%,rgba(0,0,0,.55) 100%);}
+    background:radial-gradient(130% 92% at 50% -12%,transparent 52%,rgba(0,0,0,.6) 100%)}
   .spot{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(420px circle at var(--x,50%) var(--y,18%),rgba(243,241,234,.05),transparent 60%);
-    transition:background-position .3s;}
+    background:radial-gradient(460px circle at var(--x,50%) var(--y,16%),rgba(244,244,243,.045),transparent 60%)}
   main,header,nav,footer{position:relative;z-index:1}
   @media(prefers-reduced-motion:reduce){.grain{animation:none}}
 
-  /* ---- nav ---- */
+  /* ===== pixel label helper ===== */
+  .pix{font-family:var(--pix);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);line-height:1.8}
+
+  /* ===== nav ===== */
   nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);
-    background:linear-gradient(180deg,rgba(7,7,6,.9),rgba(7,7,6,.3));border-bottom:1px solid var(--line-s)}
-  nav .wrap{display:flex;align-items:center;height:70px}
-  .mark{display:flex;align-items:center;gap:12px;letter-spacing:.3px}
-  .mark img{width:26px;height:26px;border-radius:7px;opacity:.95}
-  .mark b{font-family:var(--serif);font-weight:500;font-size:19px;letter-spacing:0}
-  .mark span{color:var(--mut);font-size:19px;font-family:var(--serif);font-weight:300}
-  .nav-right{margin-left:auto;display:flex;align-items:center;gap:28px}
-  .nav-right .lk{font-size:13px;color:var(--mut);transition:color .25s;font-family:var(--mono)}
-  .nav-right .lk:hover{color:var(--ink)}
-  .nav-dl{font-size:13px;font-family:var(--mono);color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:3px;transition:border-color .25s}
-  .nav-dl:hover{border-color:var(--ink)}
-  @media(max-width:620px){.nav-right .lk{display:none}}
+    background:linear-gradient(180deg,rgba(7,7,7,.92),rgba(7,7,7,.35));border-bottom:1px solid var(--line-s)}
+  nav .wrap{display:flex;align-items:center;height:68px}
+  .mark{display:flex;align-items:center;gap:11px}
+  .mark img{width:26px;height:26px;border-radius:7px}
+  .mark b{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:30px}
+  .nav-right a.lk{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);transition:color .2s}
+  .nav-right a.lk:hover{color:var(--ink)}
+  .nav-dl{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink);border:1px solid var(--line);padding:7px 16px;border-radius:7px;transition:border-color .2s,background .2s}
+  .nav-dl:hover{border-color:var(--ink);background:rgba(244,244,243,.05)}
+  @media(max-width:620px){.nav-right a.lk{display:none}}
 
-  /* ---- hero ---- */
-  .hero{padding:clamp(70px,13vh,130px) 0 70px;text-align:center}
-  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);
-    display:inline-flex;align-items:center;gap:12px}
-  .kicker::before,.kicker::after{content:"";width:34px;height:1px;background:var(--line)}
-  .crown{width:92px;height:92px;margin:30px auto 8px;display:block;border-radius:21px;
-    box-shadow:0 1px 0 rgba(243,241,234,.08),0 30px 60px -20px rgba(0,0,0,.8);animation:breathe 7s ease-in-out infinite}
-  @keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.012)}}
-  h1{font-family:var(--serif);font-weight:300;font-optical-sizing:auto;margin:14px 0 0;
-    font-size:clamp(58px,15vw,160px);line-height:.86;letter-spacing:-.02em}
-  h1 em{font-style:italic;font-weight:300}
-  .lede{max-width:540px;margin:26px auto 0;color:var(--mut);font-size:clamp(16px,2.3vw,19px);line-height:1.65}
-  .lede b{color:var(--ink);font-weight:500}
-  .hero-cta{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:16px}
-  .dlbtn{display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);
-    font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.3px;
-    padding:16px 30px;border-radius:40px;transition:transform .2s cubic-bezier(.2,.8,.2,1);will-change:transform}
-  .dlbtn svg{width:16px;height:16px}
+  /* ===== hero ===== */
+  .hero{padding:clamp(60px,11vh,110px) 0 56px;text-align:center}
+  .kicker{display:inline-flex;align-items:center;gap:13px;font-family:var(--pix);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
+  .kicker::before,.kicker::after{content:"";width:30px;height:1px;background:var(--line)}
+  .crown{width:96px;height:96px;margin:28px auto 12px;display:block;border-radius:22px;
+    box-shadow:0 1px 0 rgba(244,244,243,.08),0 34px 64px -24px rgba(0,0,0,.85);animation:breathe 7s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.012)}}
+  h1{font-family:var(--disp);font-weight:700;margin:10px 0 0;text-transform:uppercase;
+    font-size:clamp(62px,15vw,170px);line-height:.84;letter-spacing:.01em}
+  .lede{font-family:var(--ui);font-weight:500;max-width:520px;margin:22px auto 0;color:var(--mut);font-size:clamp(15px,2.2vw,18px);line-height:1.62}
+  .lede b{color:var(--ink);font-weight:600}
+  .hero-cta{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:15px}
+  .dlbtn{display:inline-flex;align-items:center;gap:11px;background:var(--ink);color:var(--bg);
+    font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.06em;text-transform:uppercase;
+    padding:15px 30px;border-radius:9px;transition:transform .2s cubic-bezier(.2,.8,.2,1);will-change:transform}
+  .dlbtn svg{width:17px;height:17px}
   .dlbtn:hover{transform:translateY(-2px)}
-  .verline{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.5px}
+  .verline{font-family:var(--pix);font-size:10.5px;letter-spacing:1px;color:var(--dim)}
 
-  /* ---- marquee ---- */
-  .marq{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);padding:20px 0;margin-top:34px;
+  /* ===== marquee ===== */
+  .marq{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);padding:16px 0;margin-top:30px;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
             mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-  .marq-track{display:flex;gap:0;width:max-content;animation:scrollx 34s linear infinite}
+  .marq-track{display:flex;width:max-content;animation:scrollx 30s linear infinite}
   .marq:hover .marq-track{animation-play-state:paused}
-  .marq-track span{font-family:var(--serif);font-weight:300;font-size:26px;color:var(--mut);padding:0 26px;white-space:nowrap}
-  .marq-track span::after{content:"✦";color:var(--dim);font-size:13px;margin-left:52px;vertical-align:middle}
+  .marq-track span{font-family:var(--disp);font-weight:600;font-size:24px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);padding:0 24px;white-space:nowrap;display:flex;align-items:center;gap:48px}
+  .marq-track span::after{content:"◆";color:var(--dim);font-size:10px}
   @keyframes scrollx{to{transform:translateX(-50%)}}
 
-  /* ---- generic section ---- */
-  section{padding:clamp(72px,11vh,120px) 0}
+  /* ===== section scaffolding ===== */
+  section{padding:clamp(66px,10vh,104px) 0}
   .rule{height:1px;background:var(--line-s);max-width:var(--max);margin:0 auto}
-  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+  h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.015em;line-height:.98;margin:12px 0 0;
+    font-size:clamp(34px,6vw,64px)}
 
-  /* ---- editorial intro ---- */
-  .intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:start}
-  @media(max-width:800px){.intro{grid-template-columns:1fr;gap:28px}}
-  .intro h2{font-family:var(--serif);font-weight:300;font-size:clamp(30px,5.2vw,52px);line-height:1.05;margin:16px 0 0;letter-spacing:-.015em}
-  .intro h2 em{font-style:italic}
-  .intro .body p{color:var(--mut);font-size:17px;margin:0 0 18px}
-  .intro .body p b{color:var(--ink);font-weight:500}
-  .intro .body p:first-child{margin-top:4px}
+  /* ===== intro ===== */
+  .intro{display:grid;grid-template-columns:.9fr 1fr;gap:clamp(28px,6vw,80px);align-items:center}
+  @media(max-width:800px){.intro{grid-template-columns:1fr;gap:22px}}
+  .intro .body p{color:var(--mut);font-size:16.5px;margin:0 0 16px}
+  .intro .body p b{color:var(--ink);font-weight:600}
+  .intro .body p:first-child{margin-top:0}
 
-  /* ---- feature list (typographic, not cards) ---- */
-  .flist{margin-top:10px;border-top:1px solid var(--line-s)}
-  .frow{display:grid;grid-template-columns:64px 1fr;gap:clamp(16px,4vw,48px);align-items:baseline;
-    padding:30px 8px;border-bottom:1px solid var(--line-s);transition:padding-left .3s,background .3s}
-  .frow:hover{padding-left:22px;background:linear-gradient(90deg,rgba(243,241,234,.025),transparent 60%)}
-  .frow .no{font-family:var(--mono);font-size:13px;color:var(--dim)}
-  .frow .ft h3{font-family:var(--serif);font-weight:400;font-size:clamp(21px,3.2vw,27px);margin:0 0 6px;letter-spacing:-.01em}
-  .frow .ft p{margin:0;color:var(--mut);font-size:15.5px;max-width:560px}
-  @media(max-width:560px){.frow{grid-template-columns:40px 1fr;gap:14px}}
+  /* ===== feature list ===== */
+  .flist{margin-top:40px;border-top:1px solid var(--line-s)}
+  .frow{display:grid;grid-template-columns:70px 1fr;gap:clamp(14px,4vw,44px);align-items:center;
+    padding:26px 8px;border-bottom:1px solid var(--line-s);transition:padding-left .3s,background .3s}
+  .frow:hover{padding-left:22px;background:linear-gradient(90deg,rgba(244,244,243,.03),transparent 55%)}
+  .frow .no{font-family:var(--disp);font-weight:700;font-size:26px;color:var(--dim)}
+  .frow h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(20px,3vw,26px);margin:0 0 4px}
+  .frow p{margin:0;color:var(--mut);font-size:15px;max-width:600px}
+  @media(max-width:560px){.frow{grid-template-columns:44px 1fr;gap:14px}.frow .no{font-size:20px}}
 
-  /* ---- manifesto / un-obfuscated ---- */
-  .mani .eyebrow{display:block;text-align:center}
-  .mani blockquote{font-family:var(--serif);font-weight:300;text-align:center;max-width:860px;margin:22px auto 0;
-    font-size:clamp(28px,5.4vw,56px);line-height:1.1;letter-spacing:-.02em}
-  .mani blockquote em{font-style:italic}
-  .mani .note{text-align:center;color:var(--mut);max-width:580px;margin:28px auto 0;font-size:16.5px}
-  .mani .note b{color:var(--ink);font-weight:500}
-  .code{max-width:720px;margin:44px auto 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
-    background:rgba(243,241,234,.02)}
-  .code .top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line-s)}
+  /* ===== manifesto ===== */
+  .mani{text-align:center}
+  .mani blockquote{font-family:var(--disp);font-weight:700;text-transform:uppercase;max-width:900px;margin:18px auto 0;
+    font-size:clamp(32px,6.4vw,70px);line-height:.98;letter-spacing:.01em}
+  .mani blockquote .thin{color:var(--mut)}
+  .mani .note{color:var(--mut);max-width:580px;margin:26px auto 0;font-size:16px}
+  .mani .note b{color:var(--ink);font-weight:600}
+  .code{max-width:700px;margin:40px auto 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);text-align:left}
+  .code .top{display:flex;align-items:center;gap:8px;padding:11px 15px;border-bottom:1px solid var(--line-s)}
   .code .top i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
-  .code .top span{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .code pre{margin:0;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;color:#c9c6bd}
-  .code .c{color:var(--dim)}.code .k{color:var(--ink)}.code .s{color:#b9d5b0}
+  .code .top span{margin-left:8px;font-family:var(--pix);font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+  .code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:"Geist",ui-monospace,monospace;font-size:13px;line-height:1.75;color:#cfcfca}
+  .code .c{color:var(--dim)}.code .k{color:var(--ink);font-weight:600}.code .s{color:#aed6a6}
 
-  /* ---- install ---- */
+  /* ===== install ===== */
   .inst{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-s);
-    border:1px solid var(--line-s);border-radius:16px;overflow:hidden;margin-top:48px}
+    border:1px solid var(--line-s);border-radius:14px;overflow:hidden;margin-top:42px}
   @media(max-width:720px){.inst{grid-template-columns:1fr}}
-  .cell{background:var(--bg);padding:34px 30px;transition:background .3s}
-  .cell:hover{background:rgba(243,241,234,.02)}
-  .cell .no{font-family:var(--serif);font-size:40px;font-weight:300;color:var(--dim);line-height:1}
-  .cell h4{font-family:var(--serif);font-weight:400;font-size:21px;margin:16px 0 8px}
-  .cell p{margin:0;color:var(--mut);font-size:15px}
-  .cell code{font-family:var(--mono);font-size:13px;color:var(--ink);background:rgba(243,241,234,.06);padding:1px 6px;border-radius:5px}
+  .cell{background:var(--bg);padding:30px 26px;transition:background .3s}
+  .cell:hover{background:rgba(244,244,243,.02)}
+  .cell .no{font-family:var(--disp);font-weight:700;font-size:42px;color:var(--dim);line-height:1}
+  .cell h4{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:20px;margin:12px 0 7px}
+  .cell p{margin:0;color:var(--mut);font-size:14.5px}
+  .cell code{font-family:"Geist",monospace;font-size:13px;color:var(--ink);background:rgba(244,244,243,.07);padding:1px 6px;border-radius:5px}
 
-  /* ---- final download ---- */
+  /* ===== final ===== */
   .final{text-align:center}
-  .final h2{font-family:var(--serif);font-weight:300;font-size:clamp(44px,9vw,110px);line-height:.9;letter-spacing:-.02em;margin:0}
-  .final h2 em{font-style:italic}
-  .final p{color:var(--mut);font-family:var(--mono);font-size:13px;letter-spacing:.5px;margin:22px 0 32px}
+  .final h2{font-size:clamp(50px,11vw,130px);line-height:.86}
+  .final .sub{margin:20px 0 30px}
 
-  footer{border-top:1px solid var(--line-s);padding:40px 0}
+  footer{border-top:1px solid var(--line-s);padding:36px 0}
   footer .wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-  footer .mark b,footer .mark span{font-size:16px}
+  footer .mark b{font-size:18px}
   footer .mark img{width:20px;height:20px}
-  .fright{margin-left:auto;display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:12.5px;color:var(--dim)}
-  .fright a{color:var(--mut);transition:color .25s}.fright a:hover{color:var(--ink)}
-  .goat{font-family:var(--serif);font-style:italic;font-weight:300}
+  .fright{margin-left:auto;display:flex;align-items:center;gap:22px}
+  .fright a{font-family:var(--disp);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:14px;color:var(--mut);transition:color .2s}
+  .fright a:hover{color:var(--ink)}
+  .fright .goat{font-family:var(--pix);font-size:10px;letter-spacing:.5px;color:var(--dim)}
 
-  /* ---- reveal ---- */
-  .rv{opacity:0;transform:translateY(26px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+  /* ===== reveal ===== */
+  .rv{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
   .rv.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.crown{animation:none}}
 </style>
@@ -178,12 +174,12 @@
 
 <nav>
   <div class="wrap">
-    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b><span>Client</span></a>
+    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b></a>
     <div class="nav-right">
       <a class="lk" href="#what">What</a>
       <a class="lk" href="#open">Open</a>
       <a class="lk" href="#install">Install</a>
-      <a class="nav-dl" href="#download">Download ↓</a>
+      <a class="nav-dl" href="#download">Download</a>
     </div>
   </div>
 </nav>
@@ -192,12 +188,12 @@
   <div class="wrap">
     <div class="kicker rv">Minecraft 1.21.11 · Fabric</div>
     <img class="crown rv" src="assets/BasedIcon.png" alt="Based Client" />
-    <h1 class="rv">Based <em>Client</em></h1>
-    <p class="lede rv">A quiet, fast utility client for Minecraft — overlays, quality-of-life tooling and visual debugging. <b>Open and fully un-obfuscated.</b></p>
+    <h1 class="rv">Based<br>Client</h1>
+    <p class="lede rv">A fast, quiet utility client for Minecraft — overlays, quality-of-life tooling and visual debugging. <b>Open and fully un-obfuscated.</b></p>
     <div class="hero-cta rv">
       <a class="dlbtn" id="magnet" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-        Download the jar
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+        Download
       </a>
       <div class="verline">v0.9.9.3 · Fabric Loader ≥ 0.16 · Java 21+</div>
     </div>
@@ -214,21 +210,21 @@
   <section id="what">
     <div class="wrap intro">
       <div class="rv">
-        <div class="eyebrow">What it is</div>
-        <h2>A utility client that stays <em>out of the way</em>.</h2>
+        <div class="pix">What it is</div>
+        <h2>Stays out<br>of your way</h2>
       </div>
       <div class="body rv">
-        <p><b>Based Client</b> is a standalone Minecraft Fabric mod built around three ideas: clean overlays, quality-of-life tooling, and advanced visual debugging.</p>
-        <p>It ships as a single jar. Drop it into your mods folder and launch — no separate launcher, no account wall, no DRM, nothing running in the background.</p>
+        <p><b>Based Client</b> is a standalone Minecraft Fabric mod built around three things: clean overlays, quality-of-life tooling, and advanced visual debugging.</p>
+        <p>It ships as a single jar. Drop it in your mods folder and launch — no separate launcher, no account wall, no DRM, nothing running in the background.</p>
       </div>
     </div>
     <div class="wrap">
       <div class="flist">
-        <div class="frow rv"><div class="no">01</div><div class="ft"><h3>Clean overlays</h3><p>Configurable HUD panels and readouts that stay legible and quiet until the moment you actually need them.</p></div></div>
-        <div class="frow rv"><div class="no">02</div><div class="ft"><h3>Quality of life</h3><p>A toolkit of small tweaks and keybinds that smooth out everyday play without changing how the game feels.</p></div></div>
-        <div class="frow rv"><div class="no">03</div><div class="ft"><h3>Visual debugging</h3><p>Inspect, trace and visualise what the world is doing in real time — the kind of detail you usually can't see.</p></div></div>
-        <div class="frow rv"><div class="no">04</div><div class="ft"><h3>ImGui interface</h3><p>Fast, native-feel menus. Drag, resize and configure every module live, with no clutter to fight through.</p></div></div>
-        <div class="frow rv"><div class="no">05</div><div class="ft"><h3>Accounts &amp; cosmetics</h3><p>Built-in account handling and cosmetic support, wired cleanly into the same single interface.</p></div></div>
+        <div class="frow rv"><div class="no">01</div><div><h3>Clean Overlays</h3><p>Configurable HUD panels and readouts that stay legible and quiet until the moment you need them.</p></div></div>
+        <div class="frow rv"><div class="no">02</div><div><h3>Quality of Life</h3><p>Small tweaks and keybinds that smooth out everyday play without changing how the game feels.</p></div></div>
+        <div class="frow rv"><div class="no">03</div><div><h3>Visual Debugging</h3><p>Inspect, trace and visualise what the world is doing in real time — detail you usually can't see.</p></div></div>
+        <div class="frow rv"><div class="no">04</div><div><h3>ImGui Interface</h3><p>Fast, native-feel menus. Drag, resize and configure every module live, with no clutter to fight.</p></div></div>
+        <div class="frow rv"><div class="no">05</div><div><h3>Accounts &amp; Cosmetics</h3><p>Built-in account handling and cosmetic support, wired cleanly into one interface.</p></div></div>
       </div>
     </div>
   </section>
@@ -237,8 +233,8 @@
 
   <section class="mani" id="open">
     <div class="wrap">
-      <div class="eyebrow rv">Open · Not obfuscated</div>
-      <blockquote class="rv">What you run is <em>exactly</em> what you read.</blockquote>
+      <div class="pix rv">Open · Not obfuscated</div>
+      <blockquote class="rv">What you run is<br><span class="thin">exactly</span> what you read</blockquote>
       <p class="note rv">Most clients ship a scrambled, obfuscated jar and ask you to just trust it. Based doesn't. The build is <b>clean and readable</b> — real class names, real packages, no ProGuard wall, no hidden payloads. Decompile it, read it, learn from it. <b>Because YesDev is goated.</b></p>
       <div class="code rv" aria-hidden="true">
         <div class="top"><i></i><i></i><i></i><span>BasedClient-0.9.9.3 — decompiled</span></div>
@@ -260,11 +256,11 @@
 
   <section id="install">
     <div class="wrap">
-      <div class="eyebrow rv">Install</div>
-      <h2 class="rv" style="font-family:var(--serif);font-weight:300;font-size:clamp(30px,5.2vw,52px);margin:14px 0 0;letter-spacing:-.015em">Three steps. One jar.</h2>
+      <div class="pix rv">Install</div>
+      <h2 class="rv">Three steps. One jar.</h2>
       <div class="inst">
         <div class="cell rv"><div class="no">1</div><h4>Get Fabric</h4><p>Install Fabric Loader (≥ 0.16) and Fabric API for Minecraft 1.21.11 on Java 21+.</p></div>
-        <div class="cell rv"><div class="no">2</div><h4>Drop the jar</h4><p>Place the Based Client jar into your <code>.minecraft/mods</code> folder.</p></div>
+        <div class="cell rv"><div class="no">2</div><h4>Drop the Jar</h4><p>Place the Based Client jar into your <code>.minecraft/mods</code> folder.</p></div>
         <div class="cell rv"><div class="no">3</div><h4>Launch</h4><p>Start Minecraft on the Fabric profile. Open the menu — you're set.</p></div>
       </div>
     </div>
@@ -274,13 +270,13 @@
 
   <section class="final" id="download">
     <div class="wrap">
-      <div class="eyebrow rv" style="display:block;margin-bottom:26px">Latest build — v0.9.9.3</div>
-      <h2 class="rv">Get <em>Based</em>.</h2>
-      <p class="rv">Minecraft 1.21.11 · Fabric · GPL-3.0</p>
+      <div class="pix rv" style="margin-bottom:22px">Latest build — v0.9.9.3</div>
+      <h2 class="rv">Get Based</h2>
+      <div class="pix sub rv">Minecraft 1.21.11 · Fabric · GPL-3.0</div>
       <div class="hero-cta rv" style="margin-top:0">
         <a class="dlbtn" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-          Download the jar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+          Download
         </a>
         <a class="verline" href="https://github.com/YesD3v/Based/releases" style="color:var(--mut)">or browse all releases →</a>
       </div>
@@ -290,7 +286,7 @@
 
 <footer>
   <div class="wrap">
-    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b><span>Client</span></a>
+    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b></a>
     <div class="fright">
       <a href="https://github.com/YesD3v/Based">GitHub</a>
       <a href="https://github.com/YesD3v/Based/releases">Releases</a>
@@ -300,19 +296,14 @@
 </footer>
 
 <script>
-  // staggered reveals
   const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14,rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=Math.min(i,6)*70+'ms';io.observe(el)});
-  // soft cursor light on desktop
   if(matchMedia('(pointer:fine)').matches){
     const s=document.querySelector('.spot');
     addEventListener('pointermove',e=>{s.style.setProperty('--x',e.clientX+'px');s.style.setProperty('--y',e.clientY+'px')},{passive:true});
-  }
-  // magnetic download button
-  const m=document.getElementById('magnet');
-  if(m&&matchMedia('(pointer:fine)').matches){
-    m.addEventListener('pointermove',e=>{const r=m.getBoundingClientRect();m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.3-2}px)`});
-    m.addEventListener('pointerleave',()=>{m.style.transform=''});
+    const m=document.getElementById('magnet');
+    if(m){m.addEventListener('pointermove',e=>{const r=m.getBoundingClientRect();m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.28-2}px)`});
+      m.addEventListener('pointerleave',()=>{m.style.transform=''});}
   }
 </script>
 </body>
