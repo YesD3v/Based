@@ -4,325 +4,316 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Based Client</title>
-<meta name="description" content="Based Client — a clean, open, un-obfuscated Minecraft Fabric utility client. Overlays, QoL tooling and advanced visual debugging for 1.21.11." />
+<meta name="description" content="Based Client — a clean, open, fully un-obfuscated Minecraft Fabric utility client. Overlays, quality-of-life tooling and visual debugging for 1.21.11." />
 <meta property="og:title" content="Based Client" />
-<meta property="og:description" content="A clean, open, un-obfuscated Minecraft Fabric utility client for 1.21.11." />
+<meta property="og:description" content="A clean, open, fully un-obfuscated Minecraft Fabric utility client for 1.21.11." />
 <meta property="og:image" content="assets/BasedIcon.png" />
-<meta name="theme-color" content="#000000" />
+<meta name="theme-color" content="#070707" />
 <link rel="icon" type="image/png" href="assets/BasedIcon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --bg:#060606;
-    --bg2:#0d0d0f;
-    --ink:#ffffff;
-    --mut:#9a9a9f;
-    --dim:#5a5a60;
-    --line:rgba(255,255,255,.08);
-    --line2:rgba(255,255,255,.14);
-    --card:rgba(255,255,255,.025);
-    --glow:rgba(255,255,255,.9);
-    --max:1060px;
+    --bg:#070706;
+    --ink:#f3f1ea;
+    --mut:#8d8a81;
+    --dim:#56544d;
+    --line:rgba(243,241,234,.11);
+    --line-s:rgba(243,241,234,.06);
+    --gut:22px;
+    --max:1120px;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Space Grotesk",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    -webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.55;
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:400;
   }
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  ::selection{background:var(--ink);color:var(--bg)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
 
-  /* ambient animated background */
-  .aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .aura::before,.aura::after{
-    content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.14;
-    background:radial-gradient(circle,#ffffff 0%,transparent 70%);
+  /* ---- living texture: film grain + vignette ---- */
+  .grain{
+    position:fixed;inset:-150%;z-index:0;pointer-events:none;opacity:.045;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    animation:grain 7s steps(6) infinite;
   }
-  .aura::before{width:620px;height:620px;top:-220px;left:50%;transform:translateX(-50%);animation:drift1 16s ease-in-out infinite}
-  .aura::after{width:460px;height:460px;bottom:-200px;right:-120px;opacity:.08;animation:drift2 20s ease-in-out infinite}
-  @keyframes drift1{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-46%,40px)}}
-  @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-40px)}}
-  .grid-bg{
-    position:fixed;inset:0;z-index:0;pointer-events:none;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:46px 46px;
-    -webkit-mask-image:radial-gradient(ellipse 70% 55% at 50% 0%,#000 0%,transparent 75%);
-            mask-image:radial-gradient(ellipse 70% 55% at 50% 0%,#000 0%,transparent 75%);
-    opacity:.5;
+  @keyframes grain{
+    0%{transform:translate(0,0)}20%{transform:translate(-6%,4%)}40%{transform:translate(4%,-5%)}
+    60%{transform:translate(-5%,6%)}80%{transform:translate(6%,-4%)}100%{transform:translate(0,0)}
   }
+  .vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(130% 90% at 50% -10%,transparent 55%,rgba(0,0,0,.55) 100%);}
+  .spot{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(420px circle at var(--x,50%) var(--y,18%),rgba(243,241,234,.05),transparent 60%);
+    transition:background-position .3s;}
+  main,header,nav,footer{position:relative;z-index:1}
+  @media(prefers-reduced-motion:reduce){.grain{animation:none}}
 
-  header,section,footer{position:relative;z-index:1}
+  /* ---- nav ---- */
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);
+    background:linear-gradient(180deg,rgba(7,7,6,.9),rgba(7,7,6,.3));border-bottom:1px solid var(--line-s)}
+  nav .wrap{display:flex;align-items:center;height:70px}
+  .mark{display:flex;align-items:center;gap:12px;letter-spacing:.3px}
+  .mark img{width:26px;height:26px;border-radius:7px;opacity:.95}
+  .mark b{font-family:var(--serif);font-weight:500;font-size:19px;letter-spacing:0}
+  .mark span{color:var(--mut);font-size:19px;font-family:var(--serif);font-weight:300}
+  .nav-right{margin-left:auto;display:flex;align-items:center;gap:28px}
+  .nav-right .lk{font-size:13px;color:var(--mut);transition:color .25s;font-family:var(--mono)}
+  .nav-right .lk:hover{color:var(--ink)}
+  .nav-dl{font-size:13px;font-family:var(--mono);color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:3px;transition:border-color .25s}
+  .nav-dl:hover{border-color:var(--ink)}
+  @media(max-width:620px){.nav-right .lk{display:none}}
 
-  /* nav */
-  nav{
-    position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);
-    background:linear-gradient(180deg,rgba(6,6,6,.85),rgba(6,6,6,.35));
-    border-bottom:1px solid var(--line);
-  }
-  nav .wrap{display:flex;align-items:center;gap:14px;height:64px}
-  .brand{display:flex;align-items:center;gap:11px;font-weight:600;letter-spacing:.2px}
-  .brand img{width:30px;height:30px;border-radius:8px;box-shadow:0 0 0 1px var(--line2),0 0 22px rgba(255,255,255,.18)}
-  .brand b{font-weight:700}
-  .nav-links{margin-left:auto;display:flex;gap:26px;align-items:center}
-  .nav-links a{color:var(--mut);font-size:14px;transition:color .2s}
-  .nav-links a:hover{color:#fff}
-  .nav-cta{
-    padding:9px 16px;border-radius:999px;background:#fff;color:#000!important;
-    font-size:13px;font-weight:600;transition:transform .15s,box-shadow .2s;
-    box-shadow:0 0 22px rgba(255,255,255,.25)
-  }
-  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 34px rgba(255,255,255,.4)}
-  @media(max-width:640px){.nav-links a:not(.nav-cta){display:none}}
+  /* ---- hero ---- */
+  .hero{padding:clamp(70px,13vh,130px) 0 70px;text-align:center}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--dim);
+    display:inline-flex;align-items:center;gap:12px}
+  .kicker::before,.kicker::after{content:"";width:34px;height:1px;background:var(--line)}
+  .crown{width:92px;height:92px;margin:30px auto 8px;display:block;border-radius:21px;
+    box-shadow:0 1px 0 rgba(243,241,234,.08),0 30px 60px -20px rgba(0,0,0,.8);animation:breathe 7s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.012)}}
+  h1{font-family:var(--serif);font-weight:300;font-optical-sizing:auto;margin:14px 0 0;
+    font-size:clamp(58px,15vw,160px);line-height:.86;letter-spacing:-.02em}
+  h1 em{font-style:italic;font-weight:300}
+  .lede{max-width:540px;margin:26px auto 0;color:var(--mut);font-size:clamp(16px,2.3vw,19px);line-height:1.65}
+  .lede b{color:var(--ink);font-weight:500}
+  .hero-cta{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:16px}
+  .dlbtn{display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:var(--bg);
+    font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:.3px;
+    padding:16px 30px;border-radius:40px;transition:transform .2s cubic-bezier(.2,.8,.2,1);will-change:transform}
+  .dlbtn svg{width:16px;height:16px}
+  .dlbtn:hover{transform:translateY(-2px)}
+  .verline{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.5px}
 
-  /* hero */
-  .hero{padding:92px 0 70px;text-align:center}
-  .crown{
-    width:118px;height:118px;border-radius:26px;margin:0 auto 30px;display:block;
-    box-shadow:0 0 0 1px var(--line2),0 24px 70px rgba(0,0,0,.6),0 0 60px rgba(255,255,255,.14);
-    animation:floaty 6s ease-in-out infinite;
-  }
-  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-  .pill{
-    display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;
-    border:1px solid var(--line2);background:var(--card);color:var(--mut);
-    font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.4px;margin-bottom:26px
-  }
-  .dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;animation:pulse 1.8s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-  h1{
-    font-size:clamp(46px,9vw,92px);line-height:.98;margin:0 0 20px;font-weight:700;letter-spacing:-2px;
-    background:linear-gradient(180deg,#fff 30%,#8f8f95);-webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .sub{max-width:580px;margin:0 auto 38px;color:var(--mut);font-size:clamp(16px,2.2vw,19px)}
-  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .btn{
-    display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:14px;
-    font-weight:600;font-size:16px;transition:transform .15s,box-shadow .25s,background .2s;cursor:pointer;border:1px solid transparent
-  }
-  .btn-primary{background:#fff;color:#000;box-shadow:0 0 0 1px rgba(255,255,255,.4),0 10px 40px rgba(255,255,255,.22)}
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px #fff,0 14px 54px rgba(255,255,255,.4)}
-  .btn-ghost{background:var(--card);border-color:var(--line2);color:#fff}
-  .btn-ghost:hover{background:rgba(255,255,255,.07);transform:translateY(-2px)}
-  .meta{margin-top:22px;color:var(--dim);font-family:"JetBrains Mono",monospace;font-size:12.5px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
-  .meta span{display:inline-flex;align-items:center;gap:7px}
+  /* ---- marquee ---- */
+  .marq{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);padding:20px 0;margin-top:34px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .marq-track{display:flex;gap:0;width:max-content;animation:scrollx 34s linear infinite}
+  .marq:hover .marq-track{animation-play-state:paused}
+  .marq-track span{font-family:var(--serif);font-weight:300;font-size:26px;color:var(--mut);padding:0 26px;white-space:nowrap}
+  .marq-track span::after{content:"✦";color:var(--dim);font-size:13px;margin-left:52px;vertical-align:middle}
+  @keyframes scrollx{to{transform:translateX(-50%)}}
 
-  /* section heading */
-  .shead{text-align:center;margin:0 0 46px}
-  .shead .k{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--dim);letter-spacing:3px;text-transform:uppercase}
-  .shead h2{font-size:clamp(28px,5vw,42px);margin:10px 0 0;letter-spacing:-1px;font-weight:700}
-  section.band{padding:84px 0;border-top:1px solid var(--line)}
+  /* ---- generic section ---- */
+  section{padding:clamp(72px,11vh,120px) 0}
+  .rule{height:1px;background:var(--line-s);max-width:var(--max);margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
 
-  /* features */
-  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media(max-width:860px){.feat{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.feat{grid-template-columns:1fr}}
-  .card{
-    border:1px solid var(--line);background:var(--card);border-radius:18px;padding:26px 24px;
-    transition:transform .25s,border-color .25s,background .25s;position:relative;overflow:hidden
-  }
-  .card:hover{transform:translateY(-4px);border-color:var(--line2);background:rgba(255,255,255,.045)}
-  .card::after{content:"";position:absolute;inset:0;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.07),transparent 40%);opacity:0;transition:opacity .3s}
-  .card:hover::after{opacity:1}
-  .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;border:1px solid var(--line2);background:rgba(255,255,255,.04);margin-bottom:16px}
-  .ic svg{width:21px;height:21px;stroke:#fff;fill:none;stroke-width:1.7}
-  .card h3{margin:0 0 7px;font-size:18px;font-weight:600}
-  .card p{margin:0;color:var(--mut);font-size:14.5px}
+  /* ---- editorial intro ---- */
+  .intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:start}
+  @media(max-width:800px){.intro{grid-template-columns:1fr;gap:28px}}
+  .intro h2{font-family:var(--serif);font-weight:300;font-size:clamp(30px,5.2vw,52px);line-height:1.05;margin:16px 0 0;letter-spacing:-.015em}
+  .intro h2 em{font-style:italic}
+  .intro .body p{color:var(--mut);font-size:17px;margin:0 0 18px}
+  .intro .body p b{color:var(--ink);font-weight:500}
+  .intro .body p:first-child{margin-top:4px}
 
-  /* open / not obfuscated highlight */
-  .open-wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
-  @media(max-width:820px){.open-wrap{grid-template-columns:1fr;gap:28px}}
-  .open-wrap h2{font-size:clamp(28px,5vw,40px);margin:0 0 16px;letter-spacing:-1px}
-  .open-wrap p{color:var(--mut);font-size:16px;margin:0 0 14px}
-  .badge-open{
-    display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:12px;
-    border:1px solid var(--line2);background:var(--card);font-family:"JetBrains Mono",monospace;font-size:13px
-  }
-  .badge-open .dot{background:#5ef08a;box-shadow:0 0 10px #5ef08a}
-  .code{
-    border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0b0b0d,#070708);
-    font-family:"JetBrains Mono",monospace;font-size:13px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)
-  }
-  .code .bar{display:flex;gap:7px;padding:13px 16px;border-bottom:1px solid var(--line)}
-  .code .bar i{width:11px;height:11px;border-radius:50%;background:#2a2a2e;display:block}
-  .code pre{margin:0;padding:18px 18px;color:#c7c7cc;overflow-x:auto;line-height:1.7}
-  .code .c{color:var(--dim)}.code .g{color:#5ef08a}.code .w{color:#fff}
+  /* ---- feature list (typographic, not cards) ---- */
+  .flist{margin-top:10px;border-top:1px solid var(--line-s)}
+  .frow{display:grid;grid-template-columns:64px 1fr;gap:clamp(16px,4vw,48px);align-items:baseline;
+    padding:30px 8px;border-bottom:1px solid var(--line-s);transition:padding-left .3s,background .3s}
+  .frow:hover{padding-left:22px;background:linear-gradient(90deg,rgba(243,241,234,.025),transparent 60%)}
+  .frow .no{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .frow .ft h3{font-family:var(--serif);font-weight:400;font-size:clamp(21px,3.2vw,27px);margin:0 0 6px;letter-spacing:-.01em}
+  .frow .ft p{margin:0;color:var(--mut);font-size:15.5px;max-width:560px}
+  @media(max-width:560px){.frow{grid-template-columns:40px 1fr;gap:14px}}
 
-  /* steps */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
-  @media(max-width:720px){.steps{grid-template-columns:1fr}}
-  .step{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--card);position:relative}
-  .step::before{counter-increment:s;content:"0" counter(s);font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--dim)}
-  .step h4{margin:10px 0 6px;font-size:16px}
-  .step p{margin:0;color:var(--mut);font-size:14px}
+  /* ---- manifesto / un-obfuscated ---- */
+  .mani .eyebrow{display:block;text-align:center}
+  .mani blockquote{font-family:var(--serif);font-weight:300;text-align:center;max-width:860px;margin:22px auto 0;
+    font-size:clamp(28px,5.4vw,56px);line-height:1.1;letter-spacing:-.02em}
+  .mani blockquote em{font-style:italic}
+  .mani .note{text-align:center;color:var(--mut);max-width:580px;margin:28px auto 0;font-size:16.5px}
+  .mani .note b{color:var(--ink);font-weight:500}
+  .code{max-width:720px;margin:44px auto 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    background:rgba(243,241,234,.02)}
+  .code .top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line-s)}
+  .code .top i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+  .code .top span{margin-left:8px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .code pre{margin:0;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.75;color:#c9c6bd}
+  .code .c{color:var(--dim)}.code .k{color:var(--ink)}.code .s{color:#b9d5b0}
 
-  /* download footer cta */
-  .final{text-align:center;padding:96px 0}
-  .final h2{font-size:clamp(32px,6vw,56px);margin:0 0 14px;letter-spacing:-1.5px;background:linear-gradient(180deg,#fff,#8f8f95);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .final p{color:var(--mut);margin:0 0 30px}
+  /* ---- install ---- */
+  .inst{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-s);
+    border:1px solid var(--line-s);border-radius:16px;overflow:hidden;margin-top:48px}
+  @media(max-width:720px){.inst{grid-template-columns:1fr}}
+  .cell{background:var(--bg);padding:34px 30px;transition:background .3s}
+  .cell:hover{background:rgba(243,241,234,.02)}
+  .cell .no{font-family:var(--serif);font-size:40px;font-weight:300;color:var(--dim);line-height:1}
+  .cell h4{font-family:var(--serif);font-weight:400;font-size:21px;margin:16px 0 8px}
+  .cell p{margin:0;color:var(--mut);font-size:15px}
+  .cell code{font-family:var(--mono);font-size:13px;color:var(--ink);background:rgba(243,241,234,.06);padding:1px 6px;border-radius:5px}
 
-  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--dim);font-size:13.5px}
-  footer .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  footer .goat{margin-left:auto;font-family:"JetBrains Mono",monospace}
-  footer a{color:var(--mut)}footer a:hover{color:#fff}
+  /* ---- final download ---- */
+  .final{text-align:center}
+  .final h2{font-family:var(--serif);font-weight:300;font-size:clamp(44px,9vw,110px);line-height:.9;letter-spacing:-.02em;margin:0}
+  .final h2 em{font-style:italic}
+  .final p{color:var(--mut);font-family:var(--mono);font-size:13px;letter-spacing:.5px;margin:22px 0 32px}
 
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
-  .reveal.in{opacity:1;transform:none}
+  footer{border-top:1px solid var(--line-s);padding:40px 0}
+  footer .wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  footer .mark b,footer .mark span{font-size:16px}
+  footer .mark img{width:20px;height:20px}
+  .fright{margin-left:auto;display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:12.5px;color:var(--dim)}
+  .fright a{color:var(--mut);transition:color .25s}.fright a:hover{color:var(--ink)}
+  .goat{font-family:var(--serif);font-style:italic;font-weight:300}
+
+  /* ---- reveal ---- */
+  .rv{opacity:0;transform:translateY(26px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.crown{animation:none}}
 </style>
 </head>
 <body>
-<div class="aura"></div>
-<div class="grid-bg"></div>
+<div class="grain"></div>
+<div class="spot"></div>
+<div class="vignette"></div>
 
 <nav>
   <div class="wrap">
-    <a class="brand" href="#top"><img src="assets/BasedIcon.png" alt="Based" /><span>Based<b>Client</b></span></a>
-    <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#open">Open Source</a>
-      <a href="#install">Install</a>
-      <a class="nav-cta" href="#download">Download</a>
+    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b><span>Client</span></a>
+    <div class="nav-right">
+      <a class="lk" href="#what">What</a>
+      <a class="lk" href="#open">Open</a>
+      <a class="lk" href="#install">Install</a>
+      <a class="nav-dl" href="#download">Download ↓</a>
     </div>
   </div>
 </nav>
 
 <header class="hero" id="top">
   <div class="wrap">
-    <img class="crown" src="assets/BasedIcon.png" alt="Based Client crown" />
-    <div class="pill"><span class="dot"></span> v0.9.9.3 &nbsp;·&nbsp; Minecraft 1.21.11 &nbsp;·&nbsp; Fabric</div>
-    <h1>Based Client</h1>
-    <p class="sub">A clean, fast, <b>fully un-obfuscated</b> Minecraft utility client. Overlays, quality-of-life tooling and advanced visual debugging — nothing hidden.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" id="dl-top" href="https://github.com/YesD3v/Based/releases/latest">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-        Download .jar
+    <div class="kicker rv">Minecraft 1.21.11 · Fabric</div>
+    <img class="crown rv" src="assets/BasedIcon.png" alt="Based Client" />
+    <h1 class="rv">Based <em>Client</em></h1>
+    <p class="lede rv">A quiet, fast utility client for Minecraft — overlays, quality-of-life tooling and visual debugging. <b>Open and fully un-obfuscated.</b></p>
+    <div class="hero-cta rv">
+      <a class="dlbtn" id="magnet" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+        Download the jar
       </a>
-      <a class="btn btn-ghost" href="https://github.com/YesD3v/Based">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17 5 18 5.3 18 5.3c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg>
-        View Source
-      </a>
+      <div class="verline">v0.9.9.3 · Fabric Loader ≥ 0.16 · Java 21+</div>
     </div>
-    <div class="meta">
-      <span>⚡ Fabric Loader ≥ 0.16</span>
-      <span>◇ Java 21+</span>
-      <span>⬡ GPL-3.0</span>
+  </div>
+  <div class="marq rv" aria-hidden="true">
+    <div class="marq-track">
+      <span>Overlays</span><span>Visual Debugging</span><span>Quality of Life</span><span>ImGui</span><span>Un-obfuscated</span><span>Cosmetics</span>
+      <span>Overlays</span><span>Visual Debugging</span><span>Quality of Life</span><span>ImGui</span><span>Un-obfuscated</span><span>Cosmetics</span>
     </div>
   </div>
 </header>
 
-<section class="band" id="features">
-  <div class="wrap">
-    <div class="shead reveal"><div class="k">What's inside</div><h2>Built to actually help</h2></div>
-    <div class="feat">
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 18v3M17 18v3"/></svg></div>
-        <h3>Clean Overlays</h3>
-        <p>Crisp, configurable HUD overlays and info panels that stay out of your way until you need them.</p>
+<main>
+  <section id="what">
+    <div class="wrap intro">
+      <div class="rv">
+        <div class="eyebrow">What it is</div>
+        <h2>A utility client that stays <em>out of the way</em>.</h2>
       </div>
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2 8 12.7 4 8.8 9.5 8z"/></svg></div>
-        <h3>Quality of Life</h3>
-        <p>A toolkit of QoL tweaks and keybinds that make everyday play smoother without changing how the game feels.</p>
-      </div>
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
-        <h3>Visual Debugging</h3>
-        <p>Advanced visual debugging tools to inspect, trace and understand what the world is doing in real time.</p>
-      </div>
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
-        <h3>ImGui Interface</h3>
-        <p>Fast, native-feel ImGui menus — resize, drag and configure every module on the fly.</p>
-      </div>
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
-        <h3>Accounts &amp; Cosmetics</h3>
-        <p>Built-in account handling and cosmetic support, all wired into one tidy interface.</p>
-      </div>
-      <div class="card reveal">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
-        <h3>Lightweight &amp; Fast</h3>
-        <p>A single Fabric jar. Drop it in your mods folder and go — no launchers, no bloat, no DRM.</p>
+      <div class="body rv">
+        <p><b>Based Client</b> is a standalone Minecraft Fabric mod built around three ideas: clean overlays, quality-of-life tooling, and advanced visual debugging.</p>
+        <p>It ships as a single jar. Drop it into your mods folder and launch — no separate launcher, no account wall, no DRM, nothing running in the background.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="band" id="open">
-  <div class="wrap">
-    <div class="open-wrap">
-      <div class="reveal">
-        <div class="badge-open"><span class="dot"></span> 100% UN-OBFUSCATED</div>
-        <h2>Nothing to hide.</h2>
-        <p>Most clients ship a scrambled, obfuscated jar you're told to just trust. <b>Based is not one of them.</b></p>
-        <p>The build is shipped <b>clean and readable</b> — real class names, real packages, no junk, no hidden payloads. Decompile it, read it, learn from it. What you run is exactly what you see.</p>
-        <p style="color:var(--dim);font-size:14px">Because YesDev is goated and doesn't hide code behind a proguard wall.</p>
+    <div class="wrap">
+      <div class="flist">
+        <div class="frow rv"><div class="no">01</div><div class="ft"><h3>Clean overlays</h3><p>Configurable HUD panels and readouts that stay legible and quiet until the moment you actually need them.</p></div></div>
+        <div class="frow rv"><div class="no">02</div><div class="ft"><h3>Quality of life</h3><p>A toolkit of small tweaks and keybinds that smooth out everyday play without changing how the game feels.</p></div></div>
+        <div class="frow rv"><div class="no">03</div><div class="ft"><h3>Visual debugging</h3><p>Inspect, trace and visualise what the world is doing in real time — the kind of detail you usually can't see.</p></div></div>
+        <div class="frow rv"><div class="no">04</div><div class="ft"><h3>ImGui interface</h3><p>Fast, native-feel menus. Drag, resize and configure every module live, with no clutter to fight through.</p></div></div>
+        <div class="frow rv"><div class="no">05</div><div class="ft"><h3>Accounts &amp; cosmetics</h3><p>Built-in account handling and cosmetic support, wired cleanly into the same single interface.</p></div></div>
       </div>
-      <div class="code reveal" aria-hidden="true">
-        <div class="bar"><i></i><i></i><i></i></div>
-<pre><span class="c">// BasedClient-0.9.9.3-mc1.21.11.jar</span>
-<span class="c">// ↳ decompiled — human-readable</span>
+    </div>
+  </section>
 
-<span class="w">package</span> net.basedclient.client;
+  <div class="rule"></div>
 
-<span class="w">public class</span> <span class="g">BasedClientMod</span> {
-    <span class="c">// clear names. no obfuscation.</span>
-    <span class="w">public void</span> onInitializeClient() {
+  <section class="mani" id="open">
+    <div class="wrap">
+      <div class="eyebrow rv">Open · Not obfuscated</div>
+      <blockquote class="rv">What you run is <em>exactly</em> what you read.</blockquote>
+      <p class="note rv">Most clients ship a scrambled, obfuscated jar and ask you to just trust it. Based doesn't. The build is <b>clean and readable</b> — real class names, real packages, no ProGuard wall, no hidden payloads. Decompile it, read it, learn from it. <b>Because YesDev is goated.</b></p>
+      <div class="code rv" aria-hidden="true">
+        <div class="top"><i></i><i></i><i></i><span>BasedClient-0.9.9.3 — decompiled</span></div>
+<pre><span class="c">// human-readable. nothing stripped.</span>
+<span class="k">package</span> net.basedclient.client;
+
+<span class="k">public class</span> BasedClientMod {
+    <span class="k">public void</span> onInitializeClient() {
         Modules.loadAll();
         Hud.attach();
-        <span class="c">// what you read == what runs</span>
+        <span class="c">// clear names — what you read == what runs</span>
     }
 }</pre>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="band" id="install">
-  <div class="wrap">
-    <div class="shead reveal"><div class="k">Install</div><h2>Three steps. One jar.</h2></div>
-    <div class="steps">
-      <div class="step reveal"><h4>Get Fabric</h4><p>Install the Fabric Loader (≥ 0.16) and Fabric API for Minecraft <b>1.21.11</b> on Java 21+.</p></div>
-      <div class="step reveal"><h4>Drop the jar</h4><p>Download the latest <b>Based Client</b> jar and place it in your <code>.minecraft/mods</code> folder.</p></div>
-      <div class="step reveal"><h4>Launch</h4><p>Start the game on the Fabric profile. The crown's live — open the menu and you're based.</p></div>
-    </div>
-  </div>
-</section>
+  <div class="rule"></div>
 
-<section class="final" id="download">
-  <div class="wrap reveal">
-    <h2>Download Based Client</h2>
-    <p>Latest build &nbsp;·&nbsp; v0.9.9.3 &nbsp;·&nbsp; Minecraft 1.21.11 &nbsp;·&nbsp; Fabric</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-        Download .jar
-      </a>
-      <a class="btn btn-ghost" href="https://github.com/YesD3v/Based/releases">All releases</a>
+  <section id="install">
+    <div class="wrap">
+      <div class="eyebrow rv">Install</div>
+      <h2 class="rv" style="font-family:var(--serif);font-weight:300;font-size:clamp(30px,5.2vw,52px);margin:14px 0 0;letter-spacing:-.015em">Three steps. One jar.</h2>
+      <div class="inst">
+        <div class="cell rv"><div class="no">1</div><h4>Get Fabric</h4><p>Install Fabric Loader (≥ 0.16) and Fabric API for Minecraft 1.21.11 on Java 21+.</p></div>
+        <div class="cell rv"><div class="no">2</div><h4>Drop the jar</h4><p>Place the Based Client jar into your <code>.minecraft/mods</code> folder.</p></div>
+        <div class="cell rv"><div class="no">3</div><h4>Launch</h4><p>Start Minecraft on the Fabric profile. Open the menu — you're set.</p></div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="final" id="download">
+    <div class="wrap">
+      <div class="eyebrow rv" style="display:block;margin-bottom:26px">Latest build — v0.9.9.3</div>
+      <h2 class="rv">Get <em>Based</em>.</h2>
+      <p class="rv">Minecraft 1.21.11 · Fabric · GPL-3.0</p>
+      <div class="hero-cta rv" style="margin-top:0">
+        <a class="dlbtn" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+          Download the jar
+        </a>
+        <a class="verline" href="https://github.com/YesD3v/Based/releases" style="color:var(--mut)">or browse all releases →</a>
+      </div>
+    </div>
+  </section>
+</main>
 
 <footer>
   <div class="wrap">
-    <a class="brand" href="#top" style="font-size:14px"><img src="assets/BasedIcon.png" alt="" style="width:22px;height:22px" />Based<b>Client</b></a>
-    <a href="https://github.com/YesD3v/Based">GitHub</a>
-    <a href="https://github.com/YesD3v/Based/releases">Releases</a>
-    <span class="goat">crafted by YesDev · goated 👑</span>
+    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b><span>Client</span></a>
+    <div class="fright">
+      <a href="https://github.com/YesD3v/Based">GitHub</a>
+      <a href="https://github.com/YesD3v/Based/releases">Releases</a>
+      <span class="goat">by YesDev — goated</span>
+    </div>
   </div>
 </footer>
 
 <script>
-  // scroll reveal
-  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
-  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%3*60)+'ms';io.observe(el)});
-  // card spotlight
-  document.querySelectorAll('.card').forEach(c=>{
-    c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')});
-  });
+  // staggered reveals
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=Math.min(i,6)*70+'ms';io.observe(el)});
+  // soft cursor light on desktop
+  if(matchMedia('(pointer:fine)').matches){
+    const s=document.querySelector('.spot');
+    addEventListener('pointermove',e=>{s.style.setProperty('--x',e.clientX+'px');s.style.setProperty('--y',e.clientY+'px')},{passive:true});
+  }
+  // magnetic download button
+  const m=document.getElementById('magnet');
+  if(m&&matchMedia('(pointer:fine)').matches){
+    m.addEventListener('pointermove',e=>{const r=m.getBoundingClientRect();m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.18}px,${(e.clientY-r.top-r.height/2)*.3-2}px)`});
+    m.addEventListener('pointerleave',()=>{m.style.transform=''});
+  }
 </script>
 </body>
 </html>
