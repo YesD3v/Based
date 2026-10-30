@@ -1,284 +1,302 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Based Client - a fast, open, un-obfuscated Minecraft Fabric utility client. 135 modules for 1.21.11.">
+  <meta property="og:title" content="Based Client">
+  <meta property="og:description" content="135 modules for combat, movement, visuals and utility. Open and un-obfuscated. Minecraft 1.21.11 Fabric.">
+  <meta property="og:image" content="assets/BasedIcon.png">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="assets/BasedIcon.png">
 <title>Based Client</title>
-<meta name="description" content="Based Client — a clean, open, fully un-obfuscated Minecraft Fabric utility client. Overlays, quality-of-life tooling and visual debugging for 1.21.11." />
-<meta property="og:title" content="Based Client" />
-<meta property="og:description" content="A clean, open, fully un-obfuscated Minecraft Fabric utility client for 1.21.11." />
-<meta property="og:image" content="assets/BasedIcon.png" />
-<meta name="theme-color" content="#060606" />
-<link rel="icon" type="image/png" href="assets/BasedIcon.png" />
 <style>
-  /* ===== the client's own fonts — same as the in-game menu ===== */
-  @font-face{font-family:"Rajdhani";src:url("assets/fonts/rajdhani-semibold.ttf") format("truetype");font-weight:600;font-display:swap}
-  @font-face{font-family:"Rajdhani";src:url("assets/fonts/rajdhani-bold.ttf") format("truetype");font-weight:700;font-display:swap}
-  @font-face{font-family:"Geist";src:url("assets/fonts/geist-medium.ttf") format("truetype");font-weight:500;font-display:swap}
-  @font-face{font-family:"Geist";src:url("assets/fonts/geist-semibold.ttf") format("truetype");font-weight:600;font-display:swap}
-  @font-face{font-family:"Silkscreen";src:url("assets/fonts/silkscreen-regular.ttf") format("truetype");font-weight:400;font-display:swap}
-
+  /* ── Based Client - pure-black marketing page. Hero = in-game "sky" (dusk topo backdrop) + white wordmark. ── */
   :root{
-    --bg:#070707;
-    --panel:#0e0e0e;
-    --ink:#f4f4f3;
-    --mut:#9b9b97;
-    --dim:#5e5e5a;
-    --line:rgba(244,244,243,.12);
-    --line-s:rgba(244,244,243,.06);
-    --gut:22px;
-    --max:1100px;
-    --disp:"Rajdhani",system-ui,sans-serif;     /* titles — menu font */
-    --ui:"Geist",system-ui,-apple-system,sans-serif; /* UI + body */
-    --pix:"Silkscreen","Geist",monospace;        /* pixel labels */
+    --bg:#000000;            /* true black */
+    --ink:#f2f2ef;
+    --mut:#8c8c87;
+    --dim:#55554f;
+    --faint:#2a2a27;
+    --line:rgba(242,242,239,.09);
+    --line-s:rgba(242,242,239,.045);
+    --card:#070707;
+    --card-h:#0c0c0c;
+    --combat:#e7533f;        /* category accents, used sparingly as tiny tags */
+    --visual:#4f9bd8;
+    --utility:#c9a24a;
+    --movement:#5bb98b;
+    --flagship:#e8e6df;
+    --disp:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --pix:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+    color-scheme:dark;
   }
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-weight:500;
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scrollbar-width:none}
+  html::-webkit-scrollbar{width:0;height:0}
+  /* floating overlay scrollbar - never reserves a strip, transparent track, blends in */
+  #scrollbar{position:fixed;top:8px;bottom:8px;right:4px;width:5px;z-index:90;
+    pointer-events:none;opacity:0;transition:opacity .35s ease}
+  #scrollbar.show{opacity:1}
+  #scrollbar .thumb{position:absolute;top:0;right:0;width:5px;border-radius:999px;
+    background:rgba(242,242,239,.2);pointer-events:auto;cursor:grab;transition:background .2s ease}
+  #scrollbar .thumb:hover{background:rgba(242,242,239,.38)}
+  #scrollbar.dragging .thumb{background:rgba(242,242,239,.5);cursor:grabbing}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-weight:400;
     line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  ::selection{background:var(--ink);color:var(--bg)}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
+  ::selection{background:var(--ink);color:#000}
+  .wrap{width:100%;max-width:1120px;margin:0 auto;
+    padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+  .pix{font-family:var(--pix);letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
 
-  /* ===== living texture ===== */
-  .grain{position:fixed;inset:-150%;z-index:0;pointer-events:none;opacity:.05;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    animation:grain 7s steps(6) infinite}
-  @keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-6%,4%)}40%{transform:translate(4%,-5%)}60%{transform:translate(-5%,6%)}80%{transform:translate(6%,-4%)}100%{transform:translate(0,0)}}
-  .vignette{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(130% 92% at 50% -12%,transparent 52%,rgba(0,0,0,.6) 100%)}
-  .spot{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(460px circle at var(--x,50%) var(--y,16%),rgba(244,244,243,.045),transparent 60%)}
-  main,header,nav,footer{position:relative;z-index:1}
-  @media(prefers-reduced-motion:reduce){.grain{animation:none}}
+  /* ── HERO ── */
+  .hero{position:relative;min-height:100svh;display:flex;flex-direction:column;overflow:hidden}
+  /* the "sky" - client's live topography loop playing behind the hero */
+  .sky{position:absolute;inset:0;z-index:0;width:100%;height:100%;
+    object-fit:cover;opacity:.55;background:#000}
+  .sky-veil{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 50% 8%, transparent 38%, rgba(0,0,0,.72) 82%, #000 100%),
+      linear-gradient(180deg, rgba(0,0,0,.35) 0%, transparent 26%, transparent 60%, #000 100%)}
 
-  /* ===== pixel label helper ===== */
-  .pix{font-family:var(--pix);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);line-height:1.8}
+  .hero-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;padding:72px 0 40px}
+  .edition{font-family:var(--pix);font-size:11px;letter-spacing:3px;color:var(--mut);margin-bottom:26px}
+  .wordmark{width:min(640px,80vw);height:auto;display:block;filter:drop-shadow(0 8px 40px rgba(0,0,0,.6))}
+  .tag{margin:24px 0 0;max-width:430px;color:var(--mut);font-size:clamp(14px,2.1vw,16.5px);line-height:1.6}
+  .tag b{color:var(--ink);font-weight:600}
+  .hero-cta{margin-top:34px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+  .dl{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:#000;
+    font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.09em;text-transform:uppercase;
+    padding:14px 28px;border-radius:999px;transition:transform .18s ease,box-shadow .18s ease}
+  .dl svg{width:16px;height:16px}
+  .dl:hover{transform:translateY(-2px);box-shadow:0 16px 40px -16px rgba(242,242,239,.6)}
+  .ghost{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--mut);padding:13px 4px;transition:color .18s}
+  .ghost:hover{color:var(--ink)}
+  .meta{margin-top:22px;font-family:var(--pix);font-size:10px;letter-spacing:1px;color:var(--dim)}
 
-  /* ===== nav ===== */
-  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);
-    background:linear-gradient(180deg,rgba(7,7,7,.92),rgba(7,7,7,.35));border-bottom:1px solid var(--line-s)}
-  nav .wrap{display:flex;align-items:center;height:68px}
-  .mark{display:flex;align-items:center;gap:11px}
-  .mark img{width:26px;height:26px;border-radius:7px}
-  .mark b{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase}
-  .nav-right{margin-left:auto;display:flex;align-items:center;gap:30px}
-  .nav-right a.lk{font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);transition:color .2s}
-  .nav-right a.lk:hover{color:var(--ink)}
-  .nav-dl{font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;
-    color:var(--ink);border:1px solid var(--line);padding:7px 16px;border-radius:7px;transition:border-color .2s,background .2s}
-  .nav-dl:hover{border-color:var(--ink);background:rgba(244,244,243,.05)}
-  @media(max-width:620px){.nav-right a.lk{display:none}}
+  .scroll{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:9px;
+    padding-bottom:30px;color:var(--dim);font-family:var(--pix);font-size:9.5px;letter-spacing:2px}
+  .scroll .bar{width:1px;height:38px;background:linear-gradient(var(--dim),transparent);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.25;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+  @media(prefers-reduced-motion:reduce){.scroll .bar{animation:none}}
 
-  /* ===== hero ===== */
-  .hero{padding:clamp(60px,11vh,110px) 0 56px;text-align:center}
-  .kicker{display:inline-flex;align-items:center;gap:13px;font-family:var(--pix);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
-  .kicker::before,.kicker::after{content:"";width:30px;height:1px;background:var(--line)}
-  .crown{width:96px;height:96px;margin:28px auto 12px;display:block;border-radius:22px;
-    box-shadow:0 1px 0 rgba(244,244,243,.08),0 34px 64px -24px rgba(0,0,0,.85);animation:breathe 7s ease-in-out infinite}
-  @keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.012)}}
-  h1{font-family:var(--disp);font-weight:700;margin:10px 0 0;text-transform:uppercase;
-    font-size:clamp(62px,15vw,170px);line-height:.84;letter-spacing:.01em}
-  .lede{font-family:var(--ui);font-weight:500;max-width:520px;margin:22px auto 0;color:var(--mut);font-size:clamp(15px,2.2vw,18px);line-height:1.62}
-  .lede b{color:var(--ink);font-weight:600}
-  .hero-cta{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:15px}
-  .dlbtn{display:inline-flex;align-items:center;gap:11px;background:var(--ink);color:var(--bg);
-    font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:.06em;text-transform:uppercase;
-    padding:15px 30px;border-radius:9px;transition:transform .2s cubic-bezier(.2,.8,.2,1);will-change:transform}
-  .dlbtn svg{width:17px;height:17px}
-  .dlbtn:hover{transform:translateY(-2px)}
-  .verline{font-family:var(--pix);font-size:10.5px;letter-spacing:1px;color:var(--dim)}
+  /* ── SECTION SCAFFOLD ── */
+  section{position:relative;padding:clamp(80px,12vh,128px) 0}
+  .shead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+  .shead .lbl{font-family:var(--pix);font-size:11px;letter-spacing:2px;color:var(--dim)}
+  .shead h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:.95;
+    margin:10px 0 0;font-size:clamp(34px,6.4vw,74px)}
+  .shead .sub{color:var(--mut);max-width:440px;font-size:15px;line-height:1.6}
 
-  /* ===== marquee ===== */
-  .marq{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);padding:16px 0;margin-top:30px;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-  .marq-track{display:flex;width:max-content;animation:scrollx 30s linear infinite}
-  .marq:hover .marq-track{animation-play-state:paused}
-  .marq-track span{font-family:var(--disp);font-weight:600;font-size:24px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);padding:0 24px;white-space:nowrap;display:flex;align-items:center;gap:48px}
-  .marq-track span::after{content:"◆";color:var(--dim);font-size:10px}
-  @keyframes scrollx{to{transform:translateX(-50%)}}
+  /* ── FLAGSHIP (the three named highlights) ── */
+  .flagship{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+  @media(max-width:860px){.flagship{grid-template-columns:1fr}}
+  .fcard{position:relative;border:1px solid var(--line);border-radius:18px;background:var(--card);
+    padding:30px 26px 28px;overflow:hidden;transition:border-color .25s,background .25s,transform .25s}
+  .fcard:hover{border-color:rgba(242,242,239,.22);background:var(--card-h);transform:translateY(-3px)}
+  .fcard::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(242,242,239,.4),transparent);opacity:0;transition:opacity .25s}
+  .fcard:hover::before{opacity:1}
+  .fnum{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.05em}
+  .fcat{float:right;font-family:var(--pix);font-size:9px;letter-spacing:1px;padding:4px 8px;border-radius:999px;
+    border:1px solid var(--line);color:var(--mut)}
+  .fcard h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.02em;
+    font-size:clamp(26px,3.4vw,34px);margin:30px 0 10px;line-height:1}
+  .fcard p{margin:0;color:var(--mut);font-size:15px;line-height:1.62}
+  .fcard .extra{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-s);
+    font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.6}
 
-  /* ===== section scaffolding ===== */
-  section{padding:clamp(66px,10vh,104px) 0}
-  .rule{height:1px;background:var(--line-s);max-width:var(--max);margin:0 auto}
-  h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.015em;line-height:.98;margin:12px 0 0;
-    font-size:clamp(34px,6vw,64px)}
+  /* ── MODULE GRID (grouped highlights) ── */
+  .group{margin-top:64px}
+  .group:first-of-type{margin-top:44px}
+  .ghead{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .ghead h4{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:19px;margin:0}
+  .ghead .count{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .ghead .ln{flex:1;height:1px;background:var(--line-s)}
+  .mods{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:720px){.mods{grid-template-columns:1fr}}
+  .mod{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;
+    border:1px solid var(--line-s);border-radius:14px;background:var(--card);padding:20px 20px;
+    transition:border-color .22s,background .22s}
+  .mod:hover{border-color:var(--line);background:var(--card-h)}
+  .mkey{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:16px;color:var(--ink)}
+  .mod h5{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:18px;margin:2px 0 6px}
+  .mod p{margin:0;color:var(--mut);font-size:14px;line-height:1.55;min-width:0}
 
-  /* ===== intro ===== */
-  .intro{display:grid;grid-template-columns:.9fr 1fr;gap:clamp(28px,6vw,80px);align-items:center}
-  @media(max-width:800px){.intro{grid-template-columns:1fr;gap:22px}}
-  .intro .body p{color:var(--mut);font-size:16.5px;margin:0 0 16px}
-  .intro .body p b{color:var(--ink);font-weight:600}
-  .intro .body p:first-child{margin-top:0}
+  /* ── OPEN STRIP ── */
+  .open{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);background:#030303}
+  .open .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,72px);align-items:center}
+  @media(max-width:800px){.open .wrap{grid-template-columns:1fr;gap:24px}}
+  .open h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.01em;line-height:.98;
+    font-size:clamp(28px,4.4vw,46px);margin:0}
+  .open h3 .d{color:var(--mut)}
+  .open p{color:var(--mut);font-size:15.5px;margin:16px 0 0;max-width:520px}
+  .open p b{color:var(--ink);font-weight:600}
+  .code{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#000}
+  .code .top{padding:11px 16px;border-bottom:1px solid var(--line-s);font-family:var(--pix);font-size:10px;
+    color:var(--dim);letter-spacing:.6px;text-transform:uppercase}
+  .code pre{margin:0;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.8;color:#c9c9c4}
+  .code .k{color:#eee;font-weight:600}.code .c{color:var(--dim)}
 
-  /* ===== feature list ===== */
-  .flist{margin-top:40px;border-top:1px solid var(--line-s)}
-  .frow{display:grid;grid-template-columns:70px 1fr;gap:clamp(14px,4vw,44px);align-items:center;
-    padding:26px 8px;border-bottom:1px solid var(--line-s);transition:padding-left .3s,background .3s}
-  .frow:hover{padding-left:22px;background:linear-gradient(90deg,rgba(244,244,243,.03),transparent 55%)}
-  .frow .no{font-family:var(--disp);font-weight:700;font-size:26px;color:var(--dim)}
-  .frow h3{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(20px,3vw,26px);margin:0 0 4px}
-  .frow p{margin:0;color:var(--mut);font-size:15px;max-width:600px}
-  @media(max-width:560px){.frow{grid-template-columns:44px 1fr;gap:14px}.frow .no{font-size:20px}}
-
-  /* ===== manifesto ===== */
-  .mani{text-align:center}
-  .mani blockquote{font-family:var(--disp);font-weight:700;text-transform:uppercase;max-width:900px;margin:18px auto 0;
-    font-size:clamp(32px,6.4vw,70px);line-height:.98;letter-spacing:.01em}
-  .mani blockquote .thin{color:var(--mut)}
-  .mani .note{color:var(--mut);max-width:580px;margin:26px auto 0;font-size:16px}
-  .mani .note b{color:var(--ink);font-weight:600}
-  .code{max-width:700px;margin:40px auto 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);text-align:left}
-  .code .top{display:flex;align-items:center;gap:8px;padding:11px 15px;border-bottom:1px solid var(--line-s)}
-  .code .top i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
-  .code .top span{margin-left:8px;font-family:var(--pix);font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
-  .code pre{margin:0;padding:18px 20px;overflow-x:auto;font-family:"Geist",ui-monospace,monospace;font-size:13px;line-height:1.75;color:#cfcfca}
-  .code .c{color:var(--dim)}.code .k{color:var(--ink);font-weight:600}.code .s{color:#aed6a6}
-
-  /* ===== install ===== */
-  .inst{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-s);
-    border:1px solid var(--line-s);border-radius:14px;overflow:hidden;margin-top:42px}
-  @media(max-width:720px){.inst{grid-template-columns:1fr}}
-  .cell{background:var(--bg);padding:30px 26px;transition:background .3s}
-  .cell:hover{background:rgba(244,244,243,.02)}
-  .cell .no{font-family:var(--disp);font-weight:700;font-size:42px;color:var(--dim);line-height:1}
-  .cell h4{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:20px;margin:12px 0 7px}
-  .cell p{margin:0;color:var(--mut);font-size:14.5px}
-  .cell code{font-family:"Geist",monospace;font-size:13px;color:var(--ink);background:rgba(244,244,243,.07);padding:1px 6px;border-radius:5px}
-
-  /* ===== final ===== */
+  /* ── FINAL ── */
   .final{text-align:center}
-  .final h2{font-size:clamp(50px,11vw,130px);line-height:.86}
-  .final .sub{margin:20px 0 30px}
+  .final h2{font-family:var(--disp);font-weight:700;text-transform:uppercase;line-height:.88;
+    font-size:clamp(56px,13vw,150px);margin:0}
+  .final .sub{margin:16px auto 30px;color:var(--mut);max-width:460px;font-size:15.5px}
 
-  footer{border-top:1px solid var(--line-s);padding:36px 0}
-  footer .wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-  footer .mark b{font-size:18px}
-  footer .mark img{width:20px;height:20px}
+  footer{border-top:1px solid var(--line-s);padding:30px 0}
+  footer .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  footer img{width:22px;height:22px;border-radius:6px}
+  footer .fn{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:16px}
   .fright{margin-left:auto;display:flex;align-items:center;gap:22px}
-  .fright a{font-family:var(--disp);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:14px;color:var(--mut);transition:color .2s}
+  .fright a{font-family:var(--disp);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:13px;color:var(--mut);transition:color .18s}
   .fright a:hover{color:var(--ink)}
-  .fright .goat{font-family:var(--pix);font-size:10px;letter-spacing:.5px;color:var(--dim)}
-
-  /* ===== reveal ===== */
-  .rv{opacity:0;transform:translateY(24px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
-  .rv.in{opacity:1;transform:none}
-  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.crown{animation:none}}
+  .fright .by{font-family:var(--pix);font-size:9.5px;letter-spacing:.5px;color:var(--dim)}
 </style>
 </head>
 <body>
-<div class="grain"></div>
-<div class="spot"></div>
-<div class="vignette"></div>
 
-<nav>
-  <div class="wrap">
-    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b></a>
-    <div class="nav-right">
-      <a class="lk" href="#what">What</a>
-      <a class="lk" href="#open">Open</a>
-      <a class="lk" href="#install">Install</a>
-      <a class="nav-dl" href="#download">Download</a>
-    </div>
-  </div>
-</nav>
-
+<!-- ───────────────── HERO (the sky) ───────────────── -->
 <header class="hero" id="top">
-  <div class="wrap">
-    <div class="kicker rv">Minecraft 1.21.11 · Fabric</div>
-    <img class="crown rv" src="assets/BasedIcon.png" alt="Based Client" />
-    <h1 class="rv">Based<br>Client</h1>
-    <p class="lede rv">A fast, quiet utility client for Minecraft — overlays, quality-of-life tooling and visual debugging. <b>Open and fully un-obfuscated.</b></p>
-    <div class="hero-cta rv">
-      <a class="dlbtn" id="magnet" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
+  <video class="sky" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <source src="assets/sky.mp4" type="video/mp4" />
+  </video>
+  <div class="sky-veil" aria-hidden="true"></div>
+  <div class="hero-inner wrap">
+    <div class="edition">Minecraft 1.21.11 · Fabric</div>
+    <img class="wordmark" src="assets/logo.png" alt="Based Client" />
+    <p class="tag">A fast, un-obfuscated Fabric utility client. <b>135 modules</b> for combat, movement, visuals and utility - in one clean jar.</p>
+    <div class="hero-cta">
+      <a class="dl" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
         Download
       </a>
-      <div class="verline">v0.9.9.3 · Fabric Loader ≥ 0.16 · Java 21+</div>
     </div>
+    <div class="meta">v0.9.9.3 · Fabric Loader ≥ 0.16 · Java 21+ · GPL-3.0</div>
   </div>
-  <div class="marq rv" aria-hidden="true">
-    <div class="marq-track">
-      <span>Overlays</span><span>Visual Debugging</span><span>Quality of Life</span><span>ImGui</span><span>Un-obfuscated</span><span>Cosmetics</span>
-      <span>Overlays</span><span>Visual Debugging</span><span>Quality of Life</span><span>ImGui</span><span>Un-obfuscated</span><span>Cosmetics</span>
-    </div>
-  </div>
+  <div class="scroll" aria-hidden="true"><span>Scroll</span><span class="bar"></span></div>
 </header>
 
 <main>
-  <section id="what">
-    <div class="wrap intro">
-      <div class="rv">
-        <div class="pix">What it is</div>
-        <h2>Stays out<br>of your way</h2>
-      </div>
-      <div class="body rv">
-        <p><b>Based Client</b> is a standalone Minecraft Fabric mod built around three things: clean overlays, quality-of-life tooling, and advanced visual debugging.</p>
-        <p>It ships as a single jar. Drop it in your mods folder and launch — no separate launcher, no account wall, no DRM, nothing running in the background.</p>
-      </div>
-    </div>
+  <!-- ───────────────── FLAGSHIP HIGHLIGHTS ───────────────── -->
+  <section id="highlights">
     <div class="wrap">
-      <div class="flist">
-        <div class="frow rv"><div class="no">01</div><div><h3>Clean Overlays</h3><p>Configurable HUD panels and readouts that stay legible and quiet until the moment you need them.</p></div></div>
-        <div class="frow rv"><div class="no">02</div><div><h3>Quality of Life</h3><p>Small tweaks and keybinds that smooth out everyday play without changing how the game feels.</p></div></div>
-        <div class="frow rv"><div class="no">03</div><div><h3>Visual Debugging</h3><p>Inspect, trace and visualise what the world is doing in real time — detail you usually can't see.</p></div></div>
-        <div class="frow rv"><div class="no">04</div><div><h3>ImGui Interface</h3><p>Fast, native-feel menus. Drag, resize and configure every module live, with no clutter to fight.</p></div></div>
-        <div class="frow rv"><div class="no">05</div><div><h3>Accounts &amp; Cosmetics</h3><p>Built-in account handling and cosmetic support, wired cleanly into one interface.</p></div></div>
+      <div class="shead">
+        <div>
+          <div class="lbl">The highlights</div>
+          <h2>Built different</h2>
+        </div>
+        <p class="sub">The flagship modules people actually open Based for - the rest of the 135 sit one keybind away.</p>
+      </div>
+
+      <div class="flagship">
+        <article class="fcard">
+          <span class="fnum">01</span><span class="fcat">Utility</span>
+          <h3>Anti&#8209;Vanish</h3>
+          <p>Detects vanished players - staff who drop off TAB to watch you don't stay invisible.</p>
+          <div class="extra">Reads vanish events, ghost particles &amp; suspicious sounds, then flags who's really there.</div>
+        </article>
+        <article class="fcard">
+          <span class="fnum">02</span><span class="fcat">Render</span>
+          <h3>CS Knife</h3>
+          <p>Knife skins for your sword with CS-style inspects on a key of your choice (F by default).</p>
+          <div class="extra">Hold the key to keep the knife spinning. Multiple blade materials &amp; finishes.</div>
+        </article>
+        <article class="fcard">
+          <span class="fnum">03</span><span class="fcat">Utility</span>
+          <h3>Player Bypass</h3>
+          <p>Flags chunks with signs of underground player bases from light data.</p>
+          <div class="extra">Pairs with Player Bypass 2 - finds players in chunks that keep ticking past your sim distance.</div>
+        </article>
+      </div>
+
+      <!-- grouped module reel -->
+      <div class="group">
+        <div class="ghead"><span class="dot" style="background:var(--combat)"></span><h4>Combat</h4><span class="count">20 modules</span><span class="ln"></span></div>
+        <div class="mods">
+          <div class="mod"><div class="mkey">KA</div><div><h5>Kill Aura</h5><p>Attacks nearby targets without moving your camera.</p></div></div>
+          <div class="mod"><div class="mkey">CA</div><div><h5>Crystal Aura</h5><p>Places and breaks end crystals for the most damage.</p></div></div>
+          <div class="mod"><div class="mkey">AC</div><div><h5>Auto City</h5><p>Mines a surround block on the best enemy in a hole, then hands off to Crystal Aura.</p></div></div>
+          <div class="mod"><div class="mkey">AT</div><div><h5>Auto Totem</h5><p>Refills an empty offhand with a totem at a human pace you set.</p></div></div>
+          <div class="mod"><div class="mkey">MC</div><div><h5>Mace</h5><p>Swaps to the strongest mace for smash hits, with optional smash assist.</p></div></div>
+          <div class="mod"><div class="mkey">AA</div><div><h5>Aim Assist</h5><p>Eases your crosshair onto the nearest enemy while you move the mouse.</p></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="ghead"><span class="dot" style="background:var(--visual)"></span><h4>Render &amp; Visuals</h4><span class="count">46 modules</span><span class="ln"></span></div>
+        <div class="mods">
+          <div class="mod"><div class="mkey">XR</div><div><h5>Xray</h5><p>Fade everything but a block whitelist to see ores through terrain.</p></div></div>
+          <div class="mod"><div class="mkey">ES</div><div><h5>ESP</h5><p>Highlights players, hostile and passive mobs with outlines, boxes and tracers.</p></div></div>
+          <div class="mod"><div class="mkey">NT</div><div><h5>Nametags</h5><p>Nametags with held items, armour, health, ping and distance.</p></div></div>
+          <div class="mod"><div class="mkey">SE</div><div><h5>Storage ESP</h5><p>Highlights storage blocks and spawners with per-type colours.</p></div></div>
+          <div class="mod"><div class="mkey">FB</div><div><h5>Fullbright</h5><p>Brightens dark areas by overriding the client lightmap gamma.</p></div></div>
+          <div class="mod"><div class="mkey">FC</div><div><h5>Freecam</h5><p>Detaches the camera so you can fly it around your body.</p></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="ghead"><span class="dot" style="background:var(--utility)"></span><h4>Utility</h4><span class="count">37 modules</span><span class="ln"></span></div>
+        <div class="mods">
+          <div class="mod"><div class="mkey">NL</div><div><h5>No Inv Leak</h5><p>Hides your items on screen for screen shares; Stream Only keeps them visible to you alone.</p></div></div>
+          <div class="mod"><div class="mkey">NP</div><div><h5>Name Protect</h5><p>Shows aliases instead of player names on your screen.</p></div></div>
+          <div class="mod"><div class="mkey">SL</div><div><h5>Staff List</h5><p>Lists online DonutSMP staff.</p></div></div>
+          <div class="mod"><div class="mkey">SP</div><div><h5>Spotify HUD</h5><p>Shows what Spotify is playing, with synced lyrics and optional media keys.</p></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="ghead"><span class="dot" style="background:var(--movement)"></span><h4>Movement</h4><span class="count">17 modules</span><span class="ln"></span></div>
+        <div class="mods">
+          <div class="mod"><div class="mkey">EF</div><div><h5>Elytra Fly</h5><p>Gives you more control over your elytra, with multiple flight modes.</p></div></div>
+          <div class="mod"><div class="mkey">SP</div><div><h5>Speed</h5><p>Modifies your movement speed when moving on the ground.</p></div></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="rule"></div>
-
-  <section class="mani" id="open">
+  <!-- ───────────────── OPEN / UN-OBFUSCATED ───────────────── -->
+  <section class="open" id="open">
     <div class="wrap">
-      <div class="pix rv">Open · Not obfuscated</div>
-      <blockquote class="rv">What you run is<br><span class="thin">exactly</span> what you read</blockquote>
-      <p class="note rv">Most clients ship a scrambled, obfuscated jar and ask you to just trust it. Based doesn't. The build is <b>clean and readable</b> — real class names, real packages, no ProGuard wall, no hidden payloads. Decompile it, read it, learn from it. <b>Because YesDev is goated.</b></p>
-      <div class="code rv" aria-hidden="true">
-        <div class="top"><i></i><i></i><i></i><span>BasedClient-0.9.9.3 — decompiled</span></div>
-<pre><span class="c">// human-readable. nothing stripped.</span>
-<span class="k">package</span> net.basedclient.client;
+      <div>
+        <div class="lbl pix" style="font-size:11px;letter-spacing:2px">Open · Not obfuscated</div>
+        <h3>What you run is<br><span class="d">exactly</span> what you read</h3>
+        <p>Most clients ship a scrambled jar and ask you to trust it. Based doesn't - <b>real class names, real packages, no obfuscation wall.</b> Decompile it, read it, learn from it.</p>
+      </div>
+      <div class="code" aria-hidden="true">
+        <div class="top">net/basedclient/client/BasedClientMod.java</div>
+<pre><span class="k">package</span> net.basedclient.client;
 
 <span class="k">public class</span> BasedClientMod {
     <span class="k">public void</span> onInitializeClient() {
-        Modules.loadAll();
+        Modules.loadAll();   <span class="c">// all 135</span>
         Hud.attach();
-        <span class="c">// clear names — what you read == what runs</span>
+        <span class="c">// clear names - what you read is what runs</span>
     }
 }</pre>
       </div>
     </div>
   </section>
 
-  <div class="rule"></div>
-
-  <section id="install">
-    <div class="wrap">
-      <div class="pix rv">Install</div>
-      <h2 class="rv">Three steps. One jar.</h2>
-      <div class="inst">
-        <div class="cell rv"><div class="no">1</div><h4>Get Fabric</h4><p>Install Fabric Loader (≥ 0.16) and Fabric API for Minecraft 1.21.11 on Java 21+.</p></div>
-        <div class="cell rv"><div class="no">2</div><h4>Drop the Jar</h4><p>Place the Based Client jar into your <code>.minecraft/mods</code> folder.</p></div>
-        <div class="cell rv"><div class="no">3</div><h4>Launch</h4><p>Start Minecraft on the Fabric profile. Open the menu — you're set.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="rule"></div>
-
+  <!-- ───────────────── DOWNLOAD ───────────────── -->
   <section class="final" id="download">
     <div class="wrap">
-      <div class="pix rv" style="margin-bottom:22px">Latest build — v0.9.9.3</div>
-      <h2 class="rv">Get Based</h2>
-      <div class="pix sub rv">Minecraft 1.21.11 · Fabric · GPL-3.0</div>
-      <div class="hero-cta rv" style="margin-top:0">
-        <a class="dlbtn" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
+      <div class="pix" style="font-size:11px;letter-spacing:2px;margin-bottom:20px">Latest build - v0.9.9.3</div>
+      <h2>Get Based</h2>
+      <p class="sub">One jar. Drop it in <span style="color:var(--ink)">.minecraft/mods</span> on a Fabric 1.21.11 profile and launch.</p>
+      <div class="hero-cta" style="margin-top:0">
+        <a class="dl" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-0.9.9.3-mc1.21.11.jar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
-          Download
+          Download the jar
         </a>
-        <a class="verline" href="https://github.com/YesD3v/Based/releases" style="color:var(--mut)">or browse all releases →</a>
+        <a class="ghost" href="https://github.com/YesD3v/Based/releases">All releases →</a>
       </div>
     </div>
   </section>
@@ -286,25 +304,75 @@
 
 <footer>
   <div class="wrap">
-    <a class="mark" href="#top"><img src="assets/BasedIcon.png" alt="" /><b>Based</b></a>
+    <img src="assets/BasedIcon.png" alt="" />
+    <span class="fn">Based</span>
     <div class="fright">
       <a href="https://github.com/YesD3v/Based">GitHub</a>
       <a href="https://github.com/YesD3v/Based/releases">Releases</a>
-      <span class="goat">by YesDev — goated</span>
+      <span class="by">by YesDev · GPL-3.0</span>
     </div>
   </div>
 </footer>
 
+<div id="scrollbar" aria-hidden="true"><div class="thumb"></div></div>
+
 <script>
-  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14,rootMargin:'0px 0px -8% 0px'});
-  document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=Math.min(i,6)*70+'ms';io.observe(el)});
-  if(matchMedia('(pointer:fine)').matches){
-    const s=document.querySelector('.spot');
-    addEventListener('pointermove',e=>{s.style.setProperty('--x',e.clientX+'px');s.style.setProperty('--y',e.clientY+'px')},{passive:true});
-    const m=document.getElementById('magnet');
-    if(m){m.addEventListener('pointermove',e=>{const r=m.getBoundingClientRect();m.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.28-2}px)`});
-      m.addEventListener('pointerleave',()=>{m.style.transform=''});}
-  }
+  /* honour reduced-motion: hold the sky on its first frame instead of looping */
+  (function(){
+    var v = document.querySelector('video.sky');
+    if (!v) return;
+    try {
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) {
+        v.removeAttribute('autoplay'); v.pause();
+      }
+    } catch (e) {}
+  })();
+
+  /* floating overlay scrollbar */
+  (function(){
+    var bar = document.getElementById('scrollbar');
+    if (!bar) return;
+    var thumb = bar.querySelector('.thumb');
+    var inset = 8, dragging = false, startY = 0, startScroll = 0;
+    function metrics(){
+      var winH = window.innerHeight;
+      var docH = document.documentElement.scrollHeight;
+      return { winH: winH, docH: docH, trackH: winH - inset*2, maxScroll: docH - winH };
+    }
+    function update(){
+      var m = metrics();
+      if (m.maxScroll <= 1){ bar.classList.remove('show'); return; }
+      var thumbH = Math.max(40, m.trackH * (m.winH / m.docH));
+      var travel = m.trackH - thumbH;
+      var sc = window.scrollY || document.documentElement.scrollTop || 0;
+      thumb.style.height = thumbH + 'px';
+      thumb.style.transform = 'translateY(' + (travel * (sc / m.maxScroll)) + 'px)';
+      bar.classList.add('show');
+    }
+    thumb.addEventListener('pointerdown', function(e){
+      dragging = true; bar.classList.add('dragging');
+      startY = e.clientY; startScroll = window.scrollY || document.documentElement.scrollTop || 0;
+      document.documentElement.style.scrollBehavior = 'auto'; // follow the cursor 1:1, no animation lag
+      try { thumb.setPointerCapture(e.pointerId); } catch(_){}
+      e.preventDefault();
+    });
+    thumb.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      var m = metrics();
+      var thumbH = Math.max(40, m.trackH * (m.winH / m.docH));
+      var travel = m.trackH - thumbH;
+      if (travel <= 0) return;
+      window.scrollTo(0, startScroll + ((e.clientY - startY) / travel) * m.maxScroll);
+    });
+    function end(){ if (dragging){ dragging = false; bar.classList.remove('dragging'); document.documentElement.style.scrollBehavior = ''; } }
+    thumb.addEventListener('pointerup', end);
+    thumb.addEventListener('pointercancel', end);
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    window.addEventListener('load', update);
+    update(); setTimeout(update, 300);
+  })();
 </script>
+
 </body>
 </html>
