@@ -48,7 +48,7 @@ The build in [Releases](https://github.com/YesD3v/Based/releases) is shipped **c
 
 👉 **[Grab the latest release](https://github.com/YesD3v/Based/releases/latest)**
 
-> Current build: **v0.9.9.3** · Minecraft **1.21.11** · Fabric
+> Current build: **v1.0** · Minecraft **1.21.11** · Fabric
 
 ## License
 
