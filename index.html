@@ -141,6 +141,11 @@
     filter:grayscale(1) brightness(1.25);opacity:.72;transition:filter .3s ease,opacity .3s ease,transform .3s ease}
   .slogos li:hover img{filter:none;opacity:1;transform:translateY(-2px)}
   @media(hover:none){.slogos img{filter:none;opacity:.9}}
+  /* DonutSMP is the headline server (Based ships Donut modules): bigger, always in colour, soft glow */
+  .slogos li.feat img{height:clamp(68px,11vw,108px);filter:drop-shadow(0 0 22px rgba(47,140,255,.35));opacity:1}
+  .slogos li.feat:hover img{filter:drop-shadow(0 0 30px rgba(47,140,255,.55))}
+  /* MCPVP's logo is very wide, so it gets less height to sit at the same visual weight as 2b2t */
+  .slogos li.wide img{height:clamp(30px,4.8vw,44px)}
   .servers .note{margin:0;max-width:520px;font-size:12.5px;line-height:1.6;color:var(--dim)}
 
   /* ── OPEN STRIP ── */
@@ -203,9 +208,9 @@
     <div class="wrap">
       <div class="lbl" id="servers-lbl">Works on servers like</div>
       <ul class="slogos">
-        <li><img src="assets/servers/donutsmp.png" alt="DonutSMP" width="307" height="160" loading="lazy" /></li>
+        <li class="feat"><img src="assets/servers/donutsmp.png" alt="DonutSMP" width="307" height="160" loading="lazy" /></li>
+        <li class="wide"><img src="assets/servers/mcpvp.png" alt="MCPVP" width="495" height="160" loading="lazy" /></li>
         <li><img src="assets/servers/2b2t.png" alt="2b2t" width="311" height="160" loading="lazy" /></li>
-        <li><img src="assets/servers/mcpvp.png" alt="MCPVP" width="495" height="160" loading="lazy" /></li>
       </ul>
       <p class="note">Based isn't affiliated with or endorsed by these servers; their names and logos belong to their owners. Check each server's rules before you play.</p>
     </div>
