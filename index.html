@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Based Client - a fast, open, un-obfuscated Minecraft Fabric utility client. 135 modules for 1.21.11.">
+  <meta name="description" content="Based Client - a fast, open, un-obfuscated Minecraft Fabric utility client. 150+ modules for 1.21.11.">
   <meta property="og:title" content="Based Client">
-  <meta property="og:description" content="135 modules for combat, movement, visuals and utility. Open and un-obfuscated. Minecraft 1.21.11 Fabric.">
+  <meta property="og:description" content="150+ modules for combat, movement, visuals and utility. Open and un-obfuscated. Minecraft 1.21.11 Fabric.">
   <meta property="og:image" content="assets/BasedIcon.png">
   <meta name="theme-color" content="#000000">
   <link rel="icon" type="image/png" href="assets/BasedIcon.png">
@@ -26,6 +26,7 @@
     --visual:#4f9bd8;
     --utility:#c9a24a;
     --movement:#5bb98b;
+    --effects:#b07ce8;
     --flagship:#e8e6df;
     --disp:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --ui:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -130,6 +131,18 @@
   .mod h5{font-family:var(--disp);font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:18px;margin:2px 0 6px}
   .mod p{margin:0;color:var(--mut);font-size:14px;line-height:1.55;min-width:0}
 
+  /* ── WORKS ON (server logos) ── */
+  section.servers{padding:clamp(48px,8vh,76px) 0;border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);background:#030303}
+  .servers .wrap{display:flex;flex-direction:column;align-items:center;gap:30px;text-align:center}
+  .servers .lbl{font-family:var(--pix);font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+  .slogos{list-style:none;margin:0;padding:0;display:flex;align-items:center;justify-content:center;
+    gap:clamp(30px,7vw,84px);flex-wrap:wrap}
+  .slogos img{height:clamp(42px,7vw,64px);width:auto;max-width:100%;display:block;
+    filter:grayscale(1) brightness(1.25);opacity:.72;transition:filter .3s ease,opacity .3s ease,transform .3s ease}
+  .slogos li:hover img{filter:none;opacity:1;transform:translateY(-2px)}
+  @media(hover:none){.slogos img{filter:none;opacity:.9}}
+  .servers .note{margin:0;max-width:520px;font-size:12.5px;line-height:1.6;color:var(--dim)}
+
   /* ── OPEN STRIP ── */
   .open{border-top:1px solid var(--line-s);border-bottom:1px solid var(--line-s);background:#030303}
   .open .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,72px);align-items:center}
@@ -172,7 +185,7 @@
   <div class="hero-inner wrap">
     <div class="edition">Minecraft 1.21.11 · Fabric</div>
     <img class="wordmark" src="assets/logo.png" alt="Based Client" />
-    <p class="tag">A fast, un-obfuscated Fabric utility client. <b>135 modules</b> for combat, movement, visuals and utility - in one clean jar.</p>
+    <p class="tag">A fast, un-obfuscated Fabric utility client. <b>150+ modules</b> for combat, movement, visuals and utility - in one clean jar.</p>
     <div class="hero-cta">
       <a class="dl" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-1.0-mc1.21.11.jar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
@@ -185,6 +198,19 @@
 </header>
 
 <main>
+  <!-- ───────────────── WORKS ON ───────────────── -->
+  <section class="servers" id="servers" aria-labelledby="servers-lbl">
+    <div class="wrap">
+      <div class="lbl" id="servers-lbl">Works on servers like</div>
+      <ul class="slogos">
+        <li><img src="assets/servers/donutsmp.png" alt="DonutSMP" width="307" height="160" loading="lazy" /></li>
+        <li><img src="assets/servers/2b2t.png" alt="2b2t" width="311" height="160" loading="lazy" /></li>
+        <li><img src="assets/servers/mcpvp.png" alt="MCPVP" width="495" height="160" loading="lazy" /></li>
+      </ul>
+      <p class="note">Based isn't affiliated with or endorsed by these servers; their names and logos belong to their owners. Check each server's rules before you play.</p>
+    </div>
+  </section>
+
   <!-- ───────────────── FLAGSHIP HIGHLIGHTS ───────────────── -->
   <section id="highlights">
     <div class="wrap">
@@ -193,7 +219,7 @@
           <div class="lbl">The highlights</div>
           <h2>Built different</h2>
         </div>
-        <p class="sub">The flagship modules people actually open Based for - the rest of the 135 sit one keybind away.</p>
+        <p class="sub">The flagship modules people actually open Based for - the rest of the 150+ sit one keybind away.</p>
       </div>
 
       <div class="flagship">
@@ -206,8 +232,8 @@
         <article class="fcard">
           <span class="fnum">02</span><span class="fcat">Render</span>
           <h3>CS Knife</h3>
-          <p>Knife skins for your sword with CS-style inspects on a key of your choice (F by default).</p>
-          <div class="extra">Hold the key to keep the knife spinning. Multiple blade materials &amp; finishes.</div>
+          <p>Butterfly, Karambit and Katana skins for your sword, with CS-style draws and inspects on a key of your choice (F by default).</p>
+          <div class="extra">Hold the key to keep it spinning, or turn on Infinite Spin. Every spin ends in a hard CS-style catch and recoil.</div>
         </article>
         <article class="fcard">
           <span class="fnum">03</span><span class="fcat">Utility</span>
@@ -219,10 +245,12 @@
 
       <!-- grouped module reel -->
       <div class="group">
-        <div class="ghead"><span class="dot" style="background:var(--combat)"></span><h4>Combat</h4><span class="count">20 modules</span><span class="ln"></span></div>
+        <div class="ghead"><span class="dot" style="background:var(--combat)"></span><h4>Combat</h4><span class="ln"></span></div>
         <div class="mods">
           <div class="mod"><div class="mkey">KA</div><div><h5>Kill Aura</h5><p>Attacks nearby targets without moving your camera.</p></div></div>
           <div class="mod"><div class="mkey">CA</div><div><h5>Crystal Aura</h5><p>Places and breaks end crystals for the most damage.</p></div></div>
+          <div class="mod"><div class="mkey">SB</div><div><h5>Sword Bot</h5><p>Fights the nearest player with a sword or axe: keeps out of their reach while charging, then steps in for timed crits. Smooth aim, weapon priority and spacing you set.</p></div></div>
+          <div class="mod"><div class="mkey">BB</div><div><h5>Backstab Bot</h5><p>Fights up close: circles round behind where they look, dodges side to side and crits every swing.</p></div></div>
           <div class="mod"><div class="mkey">AC</div><div><h5>Auto City</h5><p>Mines a surround block on the best enemy in a hole, then hands off to Crystal Aura.</p></div></div>
           <div class="mod"><div class="mkey">AT</div><div><h5>Auto Totem</h5><p>Refills an empty offhand with a totem at a human pace you set.</p></div></div>
           <div class="mod"><div class="mkey">MC</div><div><h5>Mace</h5><p>Swaps to the strongest mace for smash hits, with optional smash assist.</p></div></div>
@@ -231,7 +259,23 @@
       </div>
 
       <div class="group">
-        <div class="ghead"><span class="dot" style="background:var(--visual)"></span><h4>Render &amp; Visuals</h4><span class="count">46 modules</span><span class="ln"></span></div>
+        <div class="ghead"><span class="dot" style="background:var(--effects)"></span><h4>Effects &amp; Look</h4><span class="count">New</span><span class="ln"></span></div>
+        <div class="mods">
+          <div class="mod"><div class="mkey">RD</div><div><h5>Radiance</h5><p>Gradient outlines, glow and aura on players, mobs and your hand, hidden by walls - plus an optional glossy Shine that sticks to the body.</p></div></div>
+          <div class="mod"><div class="mkey">SH</div><div><h5>Shaders</h5><p>Lightweight shaders: glow, light rays, reflections and soft lighting.</p></div></div>
+          <div class="mod"><div class="mkey">PE</div><div><h5>PvP Effects</h5><p>A gradient hit overlay on what you hit, and a crown circle plus a snap dissolve on kills.</p></div></div>
+          <div class="mod"><div class="mkey">TR</div><div><h5>Trails</h5><p>A light line or crossed aurora ribbons trailing behind you, in your own gradient.</p></div></div>
+          <div class="mod"><div class="mkey">EE</div><div><h5>Elytra Effects</h5><p>Trails from your wing tips while gliding, with rings, orbiting orbs and sparks.</p></div></div>
+          <div class="mod"><div class="mkey">3L</div><div><h5>3D Lyrics</h5><p>The song's lyrics placed in the world word by word, timed to the singing when the song has word sync.</p></div></div>
+          <div class="mod"><div class="mkey">WE</div><div><h5>Weather</h5><p>Custom rain with ground ripples instead of vanilla's rain sheets.</p></div></div>
+          <div class="mod"><div class="mkey">FG</div><div><h5>Fog</h5><p>Thick fog all around you, in your own colour.</p></div></div>
+          <div class="mod"><div class="mkey">BA</div><div><h5>Block Animation</h5><p>Blocks you place grow from small to full size in a smooth animation.</p></div></div>
+          <div class="mod"><div class="mkey">CP</div><div><h5>Cape</h5><p>A custom black Based Client cape with your logo colour and an animated or static background.</p></div></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="ghead"><span class="dot" style="background:var(--visual)"></span><h4>Render</h4><span class="ln"></span></div>
         <div class="mods">
           <div class="mod"><div class="mkey">XR</div><div><h5>Xray</h5><p>Fade everything but a block whitelist to see ores through terrain.</p></div></div>
           <div class="mod"><div class="mkey">ES</div><div><h5>ESP</h5><p>Highlights players, hostile and passive mobs with outlines, boxes and tracers.</p></div></div>
@@ -243,17 +287,21 @@
       </div>
 
       <div class="group">
-        <div class="ghead"><span class="dot" style="background:var(--utility)"></span><h4>Utility</h4><span class="count">37 modules</span><span class="ln"></span></div>
+        <div class="ghead"><span class="dot" style="background:var(--utility)"></span><h4>Utility</h4><span class="ln"></span></div>
         <div class="mods">
-          <div class="mod"><div class="mkey">NL</div><div><h5>No Inv Leak</h5><p>Hides your items on screen for screen shares; Stream Only keeps them visible to you alone.</p></div></div>
+          <div class="mod"><div class="mkey">NL</div><div><h5>No Leak</h5><p>Keeps your visuals, HUD, inventory and scoreboard out of screenshots, screen shares and recordings.</p></div></div>
+          <div class="mod"><div class="mkey">IT</div><div><h5>Inventory Tweaks</h5><p>Steal/Dump buttons, auto steal/dump, Shift+drag to move items and XCarry.</p></div></div>
+          <div class="mod"><div class="mkey">PX</div><div><h5>Proxies</h5><p>Save SOCKS5 and HTTP proxies and connect through them right from the Multiplayer screen.</p></div></div>
+          <div class="mod"><div class="mkey">SP</div><div><h5>Spotify HUD</h5><p>Shows what Spotify is playing, with synced lyrics - word by word when the song has it - and optional media keys.</p></div></div>
           <div class="mod"><div class="mkey">NP</div><div><h5>Name Protect</h5><p>Shows aliases instead of player names on your screen.</p></div></div>
+          <div class="mod"><div class="mkey">ST</div><div><h5>Setting Tips</h5><p>Hover a setting to see a short explanation of what it does.</p></div></div>
           <div class="mod"><div class="mkey">SL</div><div><h5>Staff List</h5><p>Lists online DonutSMP staff.</p></div></div>
-          <div class="mod"><div class="mkey">SP</div><div><h5>Spotify HUD</h5><p>Shows what Spotify is playing, with synced lyrics and optional media keys.</p></div></div>
+          <div class="mod"><div class="mkey">FB</div><div><h5>Fast Break</h5><p>Breaks blocks in creative much faster while attack is held.</p></div></div>
         </div>
       </div>
 
       <div class="group">
-        <div class="ghead"><span class="dot" style="background:var(--movement)"></span><h4>Movement</h4><span class="count">17 modules</span><span class="ln"></span></div>
+        <div class="ghead"><span class="dot" style="background:var(--movement)"></span><h4>Movement</h4><span class="ln"></span></div>
         <div class="mods">
           <div class="mod"><div class="mkey">EF</div><div><h5>Elytra Fly</h5><p>Gives you more control over your elytra, with multiple flight modes.</p></div></div>
           <div class="mod"><div class="mkey">SP</div><div><h5>Speed</h5><p>Modifies your movement speed when moving on the ground.</p></div></div>
@@ -276,7 +324,7 @@
 
 <span class="k">public class</span> BasedClientMod {
     <span class="k">public void</span> onInitializeClient() {
-        Modules.loadAll();   <span class="c">// all 135</span>
+        Modules.loadAll();   <span class="c">// all 150+</span>
         Hud.attach();
         <span class="c">// clear names - what you read is what runs</span>
     }

@@ -20,16 +20,30 @@
 
 ## What is Based Client?
 
-**Based Client** is a standalone Minecraft **Fabric** utility mod focused on **overlays, quality-of-life tooling, and advanced visual debugging**. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
+**Based Client** is a standalone Minecraft **Fabric** utility mod with **150+ modules** for combat, movement, visuals and utility. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
 
 ### Features
 
-- 👑 **Clean overlays** — configurable HUD panels and info overlays
-- ⚙️ **Quality-of-life tooling** — tweaks and keybinds that make everyday play smoother
-- 🔍 **Advanced visual debugging** — inspect and trace what the world is doing in real time
-- 🪟 **ImGui interface** — fast, native-feel menus you can drag, resize and configure on the fly
+- ⚔️ **Combat** — Kill Aura, Crystal Aura, Sword Bot and Backstab Bot (timed crits, spacing, smooth aim), Auto City, Auto Totem, Mace and more
+- ✨ **Effects & look** — Radiance (gradient outlines, glow, aura and a glossy Shine), Shaders, PvP Effects, Trails, Elytra Effects, custom Weather and Fog, Block Animation and a Based cape
+- 🔪 **CS Knife** — Butterfly, Karambit and Katana skins with CS-style draws, inspects, Infinite Spin and a hard catch on every spin
+- 🎵 **Spotify HUD & 3D Lyrics** — synced lyrics on your HUD and placed in the world, word by word when the song has word sync
+- 🙈 **No Leak** — keeps your visuals, HUD, inventory and scoreboard out of screenshots, screen shares and recordings
+- 🌐 **Proxies** — save SOCKS5/HTTP proxies and connect through them from the Multiplayer screen
+- 🎒 **Quality of life** — Inventory Tweaks, Setting Tips, Name Protect, Fast Break and more
+- 🪟 **ImGui interface** — fast menus you can drag, resize and configure on the fly
 - 🧑‍🚀 **Accounts & cosmetics** — built-in account handling and cosmetic support
 - ⚡ **Lightweight** — one Fabric jar, nothing more
+
+### Works on servers like
+
+<p>
+  <img src="assets/servers/donutsmp.png" height="56" alt="DonutSMP" />&nbsp;&nbsp;&nbsp;
+  <img src="assets/servers/2b2t.png" height="56" alt="2b2t" />&nbsp;&nbsp;&nbsp;
+  <img src="assets/servers/mcpvp.png" height="56" alt="MCPVP" />
+</p>
+
+<sub>Based isn't affiliated with or endorsed by these servers; their names and logos belong to their owners. Check each server's rules before you play.</sub>
 
 ## 🔓 Not obfuscated — because YesDev is goated
 
