@@ -20,16 +20,18 @@
 
 ## What is Based Client?
 
-**Based Client** is a standalone Minecraft **Fabric** utility mod with **150+ modules** for combat, movement, visuals and utility. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
+**Based Client** is a standalone Minecraft **Fabric** utility mod with **157 modules** for combat, movement, visuals and utility. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
 
 ### Features
 
-- ⚔️ **Combat** — Kill Aura, Crystal Aura, Sword Bot and Backstab Bot (timed crits, spacing, smooth aim), Auto City, Auto Totem, Mace and more
-- ✨ **Effects & look** — Radiance (gradient outlines, glow, aura and a glossy Shine), Shaders, PvP Effects, Trails, Elytra Effects, custom Weather and Fog, Block Animation and a Based cape
+- ⚔️ **Combat** — Kill Aura, Crystal Aura, Sword Bot and Backstab Bot (timed crits, spacing, smooth aim), Auto City, Auto Totem, Mace, Anti Knockback and more, plus Opsec, a full blatant fight for authorized worlds only
+- ✨ **Effects & look** — Radiance (gradient outlines, glow, aura and a glossy Shine), Shaders, PvP Effects, Trails, Elytra Effects, custom Weather and Fog, Atmosphere shader skies, Block Animation and a Based cape
 - 🔪 **CS Knife** — Butterfly, Karambit and Katana skins with CS-style draws, inspects, Infinite Spin and a hard catch on every spin
 - 🎵 **Spotify HUD & 3D Lyrics** — synced lyrics on your HUD and placed in the world, word by word when the song has word sync
 - 🙈 **No Leak** — keeps your visuals, HUD, inventory and scoreboard out of screenshots, screen shares and recordings
 - 🌐 **Proxies** — save SOCKS5/HTTP proxies and connect through them from the Multiplayer screen
+- 🪟 **HUD** — Liquid Glass, Glow Outline, Keystrokes, Speed Graph, Lyrics Line and your own merged info lines, all in the HUD editor
+- 🏃 **Movement** — Flight at your own speed, No Slow, Elytra Fly, Speed and more
 - 🎒 **Quality of life** — Inventory Tweaks, Setting Tips, Name Protect, Fast Break and more
 - 🪟 **ImGui interface** — fast menus you can drag, resize and configure on the fly
 - 🧑‍🚀 **Accounts & cosmetics** — built-in account handling and cosmetic support
@@ -62,7 +64,7 @@ The build in [Releases](https://github.com/YesD3v/Based/releases) is shipped **c
 
 👉 **[Grab the latest release](https://github.com/YesD3v/Based/releases/latest)**
 
-> Current build: **v1.0** · Minecraft **1.21.11** · Fabric
+> Current build: **v2.0** · Minecraft **1.21.11** · Fabric
 
 ## License
 
