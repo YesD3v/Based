@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Based Client - a fast, open, un-obfuscated Minecraft Fabric utility client. 157 modules for 1.21.11.">
+  <meta name="description" content="Based Client - a fast, open, un-obfuscated Minecraft Fabric utility client. 158 modules for 1.21.11.">
   <meta property="og:title" content="Based Client">
-  <meta property="og:description" content="157 modules for combat, movement, visuals and utility. Open and un-obfuscated. Minecraft 1.21.11 Fabric.">
+  <meta property="og:description" content="158 modules for combat, movement, visuals and utility. Open and un-obfuscated. Minecraft 1.21.11 Fabric.">
   <meta property="og:image" content="assets/BasedIcon.png">
   <meta name="theme-color" content="#000000">
   <link rel="icon" type="image/png" href="assets/BasedIcon.png">
@@ -190,7 +190,7 @@
   <div class="hero-inner wrap">
     <div class="edition">Minecraft 1.21.11 · Fabric</div>
     <img class="wordmark" src="assets/logo.png" alt="Based Client" />
-    <p class="tag">A fast, un-obfuscated Fabric utility client. <b>157 modules</b> for combat, movement, visuals and utility - in one clean jar.</p>
+    <p class="tag">A fast, un-obfuscated Fabric utility client. <b>158 modules</b> for combat, movement, visuals and utility - in one clean jar.</p>
     <div class="hero-cta">
       <a class="dl" href="https://github.com/YesD3v/Based/releases/latest/download/BasedClient-2.0-mc1.21.11.jar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
@@ -224,7 +224,7 @@
           <div class="lbl">The highlights</div>
           <h2>Built different</h2>
         </div>
-        <p class="sub">The flagship modules people actually open Based for - the rest of the 157 sit one keybind away.</p>
+        <p class="sub">The flagship modules people actually open Based for - the rest of the 158 sit one keybind away.</p>
       </div>
 
       <div class="flagship">
@@ -302,6 +302,7 @@
           <div class="mod"><div class="mkey">KS</div><div><h5>Keystrokes</h5><p>W A S D, space and your mouse buttons as you press them, with clicks per second.</p></div></div>
           <div class="mod"><div class="mkey">SG</div><div><h5>Speed Graph</h5><p>A live graph of how fast you're moving.</p></div></div>
           <div class="mod"><div class="mkey">LL</div><div><h5>Lyrics Line</h5><p>The current lyric in a pill that follows its size, with an optional reactive bar visual.</p></div></div>
+          <div class="mod"><div class="mkey">SC</div><div><h5>Screens</h5><p>Your own title screen, splash and loading screen: shader skies, Liquid Glass menus and a HUD editor with movable, mergeable pills.</p></div></div>
         </div>
       </div>
 
@@ -324,7 +325,7 @@
         <div class="mods">
           <div class="mod"><div class="mkey">EF</div><div><h5>Elytra Fly</h5><p>Gives you more control over your elytra, with multiple flight modes.</p></div></div>
           <div class="mod"><div class="mkey">SP</div><div><h5>Speed</h5><p>Modifies your movement speed when moving on the ground.</p></div></div>
-          <div class="mod"><div class="mkey">FL</div><div><h5>Flight</h5><p>Fly at your own speed, with a toggle that also lets you fly in survival.</p></div></div>
+          <div class="mod"><div class="mkey">FL</div><div><h5>Flight</h5><p>Fly from 0.05x to 50x vanilla speed, optionally only while sprinting. Double jump starts and stops it, even in survival.</p></div></div>
           <div class="mod"><div class="mkey">NS</div><div><h5>No Slow</h5><p>Removes the slowdown from eating, drinking and using items, and from the Slowness effect.</p></div></div>
         </div>
       </div>
@@ -345,7 +346,7 @@
 
 <span class="k">public class</span> BasedClientMod {
     <span class="k">public void</span> onInitializeClient() {
-        Modules.loadAll();   <span class="c">// all 157</span>
+        Modules.loadAll();   <span class="c">// all 158</span>
         Hud.attach();
         <span class="c">// clear names - what you read is what runs</span>
     }

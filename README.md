@@ -20,7 +20,7 @@
 
 ## What is Based Client?
 
-**Based Client** is a standalone Minecraft **Fabric** utility mod with **157 modules** for combat, movement, visuals and utility. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
+**Based Client** is a standalone Minecraft **Fabric** utility mod with **158 modules** for combat, movement, visuals and utility. It ships as a single jar — drop it in your `mods` folder and go. No launcher, no bloat, no DRM.
 
 ### Features
 
@@ -31,7 +31,8 @@
 - 🙈 **No Leak** — keeps your visuals, HUD, inventory and scoreboard out of screenshots, screen shares and recordings
 - 🌐 **Proxies** — save SOCKS5/HTTP proxies and connect through them from the Multiplayer screen
 - 🪟 **HUD** — Liquid Glass, Glow Outline, Keystrokes, Speed Graph, Lyrics Line and your own merged info lines, all in the HUD editor
-- 🏃 **Movement** — Flight at your own speed, No Slow, Elytra Fly, Speed and more
+- 🖼️ **Screens** — your own title screen, splash and loading screen, with shader skies, Liquid Glass menus and a title screen HUD editor
+- 🏃 **Movement** — Flight from 0.05x to 50x vanilla speed, No Slow, Elytra Fly, Speed and more
 - 🎒 **Quality of life** — Inventory Tweaks, Setting Tips, Name Protect, Fast Break and more
 - 🪟 **ImGui interface** — fast menus you can drag, resize and configure on the fly
 - 🧑‍🚀 **Accounts & cosmetics** — built-in account handling and cosmetic support
